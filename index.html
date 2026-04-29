@@ -1,0 +1,1606 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>CSfC Operational Dashboard</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+<style>
+  :root {
+    --bg-0: #07090b;
+    --bg-1: #0c1014;
+    --bg-2: #11161c;
+    --bg-3: #181f27;
+    --line: rgba(255,255,255,0.08);
+    --line-strong: rgba(255,255,255,0.16);
+    --fg-0: #e6ebf0;
+    --fg-1: #a8b2bd;
+    --fg-2: #6c7682;
+    --fg-3: #3d454d;
+    --accent: #d4a647;
+    --accent-dim: #8a6c2e;
+    --ok: #5fb87a;
+    --ok-dim: #2f5d3c;
+    --warn: #d49a3f;
+    --err: #d8553f;
+    --err-dim: #5b2218;
+    --info: #6aa9d4;
+    --grid: rgba(212,166,71,0.06);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg-0);
+    color: var(--fg-0);
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-x: hidden;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 48px 48px;
+    background-position: -1px -1px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
+  }
+  .mono { font-family: 'IBM Plex Mono', monospace; }
+  .cond { font-family: 'IBM Plex Sans Condensed', sans-serif; letter-spacing: 0.02em; }
+
+  /* HEADER */
+  header {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 24px;
+    padding: 14px 22px;
+    background: linear-gradient(180deg, var(--bg-1), var(--bg-0));
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+  header::after {
+    content: '';
+    position: absolute; bottom: -1px; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent-dim), transparent);
+    opacity: 0.6;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 14px;
+  }
+  .brand-mark {
+    width: 38px; height: 38px;
+    border: 1px solid var(--accent-dim);
+    background: radial-gradient(circle at 30% 30%, rgba(212,166,71,0.18), transparent 60%);
+    display: grid; place-items: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 700; color: var(--accent);
+    font-size: 13px; letter-spacing: -0.05em;
+    position: relative;
+  }
+  .brand-mark::before, .brand-mark::after {
+    content: ''; position: absolute; width: 6px; height: 6px;
+    border: 1px solid var(--accent);
+  }
+  .brand-mark::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+  .brand-mark::after { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+  .brand-title {
+    font-family: 'IBM Plex Sans Condensed', sans-serif;
+    font-weight: 700; font-size: 15px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .brand-sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--fg-2);
+    letter-spacing: 0.15em; text-transform: uppercase;
+  }
+
+  .header-status {
+    display: flex; align-items: center; gap: 22px;
+    justify-content: flex-end;
+  }
+  .status-cell {
+    display: flex; flex-direction: column; align-items: flex-end; gap: 2px;
+  }
+  .status-cell .label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; color: var(--fg-2);
+    letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  .status-cell .value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px; color: var(--fg-0);
+    font-weight: 500; letter-spacing: 0.02em;
+  }
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 12px;
+    border: 1px solid var(--line-strong);
+    background: var(--bg-2);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .pill.ok { border-color: var(--ok); color: var(--ok); background: rgba(95,184,122,0.06); }
+  .pill.err { border-color: var(--err); color: var(--err); background: rgba(216,85,63,0.06); }
+  .pill.warn { border-color: var(--warn); color: var(--warn); background: rgba(212,154,63,0.06); }
+  .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 8px currentColor;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.45; }
+  }
+  .clock {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: var(--fg-1);
+    letter-spacing: 0.05em;
+    padding-left: 22px;
+    border-left: 1px solid var(--line);
+  }
+
+  /* LAYOUT */
+  main {
+    display: grid;
+    grid-template-columns: 320px 1fr 320px;
+    gap: 14px;
+    padding: 14px;
+  }
+  @media (max-width: 1100px) {
+    main { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    position: relative;
+  }
+  .panel::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 12px; height: 1px;
+    background: var(--accent);
+  }
+  .panel-head {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: space-between;
+    background: linear-gradient(180deg, var(--bg-2), var(--bg-1));
+  }
+  .panel-head h2 {
+    font-family: 'IBM Plex Sans Condensed', sans-serif;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--fg-1);
+  }
+  .panel-head .id {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--fg-3);
+    letter-spacing: 0.1em;
+  }
+  .panel-body { padding: 14px; }
+
+  /* TUNNEL CARDS */
+  .tunnel-card { margin-bottom: 14px; }
+  .tunnel-card:last-child { margin-bottom: 0; }
+  .tunnel-row {
+    display: grid; grid-template-columns: 90px 1fr;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--line);
+    align-items: center;
+  }
+  .tunnel-row:last-child { border-bottom: none; }
+  .tunnel-row .k {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; color: var(--fg-2);
+    letter-spacing: 0.15em; text-transform: uppercase;
+  }
+  .tunnel-row .v {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; color: var(--fg-0);
+    font-weight: 500;
+    word-break: break-all;
+  }
+  .tunnel-state {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 10px;
+    margin-bottom: 12px;
+    border: 1px solid;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .tunnel-state.ok { border-color: var(--ok); color: var(--ok); background: rgba(95,184,122,0.05); }
+  .tunnel-state.err { border-color: var(--err); color: var(--err); background: rgba(216,85,63,0.05); }
+  .tunnel-state.unknown { border-color: var(--fg-3); color: var(--fg-2); }
+  .tunnel-state .meta {
+    margin-left: auto; color: var(--fg-2); font-weight: 400; letter-spacing: 0.06em;
+  }
+
+  /* ACTION BUTTONS */
+  .actions {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  @media (max-width: 720px) {
+    .actions { grid-template-columns: repeat(2, 1fr); }
+  }
+  .action-btn {
+    background: var(--bg-2);
+    border: 1px solid var(--line-strong);
+    color: var(--fg-0);
+    padding: 18px 14px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s ease;
+    font-family: 'IBM Plex Sans', sans-serif;
+    position: relative;
+    overflow: hidden;
+  }
+  .action-btn:hover, .action-btn:focus-visible {
+    border-color: var(--accent);
+    background: var(--bg-3);
+    outline: none;
+  }
+  .action-btn:hover::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: var(--accent);
+  }
+  .action-btn:active { transform: translateY(1px); }
+  .action-btn[data-active="true"] {
+    border-color: var(--accent);
+    background: var(--bg-3);
+  }
+  .action-btn[data-active="true"]::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: var(--accent);
+  }
+  .action-btn .num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; color: var(--accent);
+    letter-spacing: 0.2em;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .action-btn .ttl {
+    font-family: 'IBM Plex Sans Condensed', sans-serif;
+    font-size: 14px; font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .action-btn .desc {
+    font-size: 11px; color: var(--fg-2);
+    line-height: 1.35;
+  }
+
+  /* CENTER STAGE */
+  .stage {
+    margin-top: 14px;
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    min-height: 280px;
+    position: relative;
+  }
+  .stage-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--line);
+    background: var(--bg-2);
+  }
+  .stage-tab {
+    padding: 10px 18px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-2);
+    cursor: pointer;
+    border: none;
+    background: none;
+    border-right: 1px solid var(--line);
+    transition: color 0.15s;
+  }
+  .stage-tab:hover { color: var(--fg-1); }
+  .stage-tab[data-active="true"] {
+    color: var(--accent);
+    background: var(--bg-1);
+    position: relative;
+  }
+  .stage-tab[data-active="true"]::after {
+    content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 1px;
+    background: var(--accent);
+  }
+  .stage-body { padding: 18px; }
+  .stage-pane { display: none; }
+  .stage-pane[data-active="true"] { display: block; }
+
+  /* SPEED TEST */
+  .speed-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .speed-cell {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    padding: 14px;
+    position: relative;
+  }
+  .speed-cell .lbl {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; color: var(--fg-2);
+    letter-spacing: 0.18em; text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .speed-cell .val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 26px; font-weight: 500;
+    color: var(--fg-0);
+    line-height: 1;
+  }
+  .speed-cell .val .u {
+    font-size: 11px; color: var(--fg-2);
+    margin-left: 4px; letter-spacing: 0.1em;
+  }
+  .speed-cell .val.active { color: var(--accent); }
+  .progress-track {
+    height: 4px;
+    background: var(--bg-3);
+    border: 1px solid var(--line);
+    margin-top: 14px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-dim), var(--accent));
+    width: 0%;
+    transition: width 0.2s ease;
+  }
+  .progress-meta {
+    display: flex; justify-content: space-between;
+    margin-top: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--fg-2);
+    letter-spacing: 0.1em;
+  }
+  .run-btn {
+    background: var(--accent);
+    color: var(--bg-0);
+    border: none;
+    padding: 10px 22px;
+    font-family: 'IBM Plex Sans Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .run-btn:hover { background: #e8b958; }
+  .run-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .run-btn.ghost {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent-dim);
+  }
+  .run-btn.ghost:hover {
+    border-color: var(--accent);
+    background: rgba(212,166,71,0.06);
+  }
+
+  /* VIDEO PANE */
+  .video-wrap {
+    display: grid;
+    grid-template-columns: 1fr 240px;
+    gap: 14px;
+  }
+  @media (max-width: 900px) {
+    .video-wrap { grid-template-columns: 1fr; }
+  }
+  .video-frame {
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+  .video-frame iframe {
+    width: 100%; height: 100%; border: none;
+  }
+  .video-stats {
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .stat-row {
+    display: flex; justify-content: space-between;
+    padding: 8px 10px;
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+  }
+  .stat-row .k { color: var(--fg-2); letter-spacing: 0.1em; text-transform: uppercase; font-size: 9px; }
+  .stat-row .v { color: var(--fg-0); }
+
+  /* DOWNLOAD PANE */
+  .dl-pane .speed-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* COLLAB PANE */
+  .collab-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 700px) {
+    .collab-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .collab-tile {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    padding: 18px;
+    text-align: left;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--fg-0);
+    display: block;
+    transition: all 0.15s;
+    font-family: 'IBM Plex Sans', sans-serif;
+  }
+  .collab-tile:hover {
+    border-color: var(--accent);
+    background: var(--bg-3);
+  }
+  .collab-tile .name {
+    font-family: 'IBM Plex Sans Condensed', sans-serif;
+    font-size: 14px; font-weight: 600;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .collab-tile .url {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--fg-2);
+    letter-spacing: 0.05em;
+    word-break: break-all;
+  }
+
+  /* RIGHT COLUMN */
+  .conn-row {
+    display: flex; justify-content: space-between;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--line);
+    align-items: center;
+  }
+  .conn-row:last-child { border-bottom: none; }
+  .conn-row .k {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; color: var(--fg-2);
+    letter-spacing: 0.15em; text-transform: uppercase;
+  }
+  .conn-row .v {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; color: var(--fg-0);
+    text-align: right;
+  }
+  .conn-row .v.muted { color: var(--fg-2); }
+
+  /* RTT GRAPH */
+  .rtt-wrap {
+    margin-top: 12px;
+    padding: 10px;
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+  }
+  .rtt-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .rtt-head .lbl {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; color: var(--fg-2);
+    letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  .rtt-head .num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 18px; color: var(--fg-0);
+    font-weight: 500;
+  }
+  .rtt-head .num .u {
+    font-size: 10px; color: var(--fg-2);
+    margin-left: 3px;
+  }
+  #rtt-canvas {
+    width: 100%;
+    height: 60px;
+    display: block;
+  }
+
+  /* MAP */
+  .map-section {
+    margin-top: 14px;
+    border: 1px solid var(--line);
+    background: var(--bg-1);
+  }
+  .map-head {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, var(--bg-2), var(--bg-1));
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .map-head h2 {
+    font-family: 'IBM Plex Sans Condensed', sans-serif;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--fg-1);
+  }
+  .map-legend {
+    display: flex; gap: 18px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--fg-2);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .map-legend .k { display: flex; align-items: center; gap: 6px; }
+  .map-legend .swatch {
+    width: 10px; height: 10px;
+    border: 1px solid currentColor;
+  }
+  #map { height: 360px; background: var(--bg-2); }
+
+  /* leaflet dark */
+  .leaflet-container { background: #0a0e12; }
+  .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.85) saturate(0.7); }
+  .leaflet-control-attribution {
+    background: rgba(7,9,11,0.85) !important;
+    color: var(--fg-2) !important;
+    font-family: 'IBM Plex Mono', monospace !important;
+    font-size: 9px !important;
+  }
+  .leaflet-control-attribution a { color: var(--fg-1) !important; }
+  .leaflet-control-zoom a {
+    background: var(--bg-2) !important;
+    color: var(--fg-0) !important;
+    border-color: var(--line) !important;
+    font-family: 'IBM Plex Mono', monospace !important;
+  }
+  .leaflet-control-zoom a:hover { background: var(--bg-3) !important; }
+
+  .map-marker {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    background: var(--bg-0);
+    box-shadow: 0 0 0 4px rgba(0,0,0,0.4), 0 0 12px currentColor;
+    position: relative;
+  }
+  .map-marker::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    opacity: 0.4;
+    animation: ring 2.4s ease-out infinite;
+  }
+  @keyframes ring {
+    0% { transform: scale(0.5); opacity: 0.7; }
+    100% { transform: scale(2.2); opacity: 0; }
+  }
+  .marker-device { color: var(--accent); }
+  .marker-egress { color: var(--ok); }
+  .leaflet-tooltip {
+    background: var(--bg-2) !important;
+    color: var(--fg-0) !important;
+    border: 1px solid var(--line-strong) !important;
+    font-family: 'IBM Plex Mono', monospace !important;
+    font-size: 10px !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase !important;
+    padding: 5px 8px !important;
+    box-shadow: none !important;
+  }
+  .leaflet-tooltip-top:before, .leaflet-tooltip-bottom:before,
+  .leaflet-tooltip-left:before, .leaflet-tooltip-right:before { display: none !important; }
+
+  /* OFFLINE OVERLAY */
+  .offline-banner {
+    display: none;
+    padding: 18px;
+    background: rgba(216,85,63,0.06);
+    border: 1px solid var(--err);
+    color: var(--err);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: center;
+    margin: 14px;
+  }
+  body[data-online="false"] .offline-banner { display: block; }
+  body[data-online="false"] main { opacity: 0.35; pointer-events: none; }
+
+  /* SCANLINE BG ACCENT */
+  .stage::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 3px,
+      rgba(255,255,255,0.005) 3px,
+      rgba(255,255,255,0.005) 4px
+    );
+    z-index: 1;
+  }
+  .stage > * { position: relative; z-index: 2; }
+
+  .badge-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    padding: 3px 7px;
+    border: 1px solid var(--line-strong);
+    color: var(--fg-1);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .badge.accent { border-color: var(--accent-dim); color: var(--accent); }
+
+  /* HINT TEXT */
+  .hint {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--fg-3);
+    letter-spacing: 0.1em;
+    margin-top: 10px;
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg-0); }
+  ::-webkit-scrollbar-thumb { background: var(--bg-3); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--line-strong); }
+
+  footer {
+    padding: 12px 22px;
+    border-top: 1px solid var(--line);
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--fg-3);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body data-online="true">
+
+<header>
+  <div class="brand">
+    <div class="brand-mark">CSf</div>
+    <div>
+      <div class="brand-title">CSfC Operational Dashboard</div>
+      <div class="brand-sub">Layered VPN / Retransmission Device Demo</div>
+    </div>
+  </div>
+
+  <div></div>
+
+  <div class="header-status">
+    <div class="status-cell">
+      <span class="label">Egress IP</span>
+      <span class="value" id="hdr-ip">resolving...</span>
+    </div>
+    <div class="status-cell">
+      <span class="label">Apparent Location</span>
+      <span class="value" id="hdr-loc">resolving...</span>
+    </div>
+    <span class="pill" id="hdr-pill"><span class="dot"></span><span id="hdr-state">checking</span></span>
+    <span class="clock mono" id="clock">00:00:00 UTC</span>
+  </div>
+</header>
+
+<div class="offline-banner">
+  device offline. no network connectivity detected.
+</div>
+
+<main>
+  <!-- LEFT COLUMN: TUNNELS -->
+  <section>
+    <div class="panel tunnel-card">
+      <div class="panel-head">
+        <h2>Tunnel A / Outer</h2>
+        <span class="id mono" id="tA-id">VPN-A.01</span>
+      </div>
+      <div class="panel-body">
+        <div class="tunnel-state ok" id="tA-state">
+          <span class="dot"></span>
+          <span>Established</span>
+          <span class="meta" id="tA-uptime">00:00:00</span>
+        </div>
+        <div class="tunnel-row"><span class="k">Vendor</span><span class="v" id="tA-vendor"></span></div>
+        <div class="tunnel-row"><span class="k">Gateway</span><span class="v" id="tA-gw"></span></div>
+        <div class="tunnel-row"><span class="k">Cipher</span><span class="v" id="tA-cipher"></span></div>
+        <div class="tunnel-row"><span class="k">Cert CA</span><span class="v" id="tA-ca"></span></div>
+        <div class="tunnel-row"><span class="k">Protocol</span><span class="v" id="tA-proto"></span></div>
+        <div class="badge-row">
+          <span class="badge accent">CSfC Outer</span>
+          <span class="badge">FIPS 140-3</span>
+          <span class="badge">CNSA 2.0</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel tunnel-card">
+      <div class="panel-head">
+        <h2>Tunnel B / Inner</h2>
+        <span class="id mono" id="tB-id">VPN-B.01</span>
+      </div>
+      <div class="panel-body">
+        <div class="tunnel-state ok" id="tB-state">
+          <span class="dot"></span>
+          <span>Established</span>
+          <span class="meta" id="tB-uptime">00:00:00</span>
+        </div>
+        <div class="tunnel-row"><span class="k">Vendor</span><span class="v" id="tB-vendor"></span></div>
+        <div class="tunnel-row"><span class="k">Gateway</span><span class="v" id="tB-gw"></span></div>
+        <div class="tunnel-row"><span class="k">Cipher</span><span class="v" id="tB-cipher"></span></div>
+        <div class="tunnel-row"><span class="k">Cert CA</span><span class="v" id="tB-ca"></span></div>
+        <div class="tunnel-row"><span class="k">Protocol</span><span class="v" id="tB-proto"></span></div>
+        <div class="badge-row">
+          <span class="badge accent">CSfC Inner</span>
+          <span class="badge">FIPS 140-3</span>
+          <span class="badge">Diverse Vendor</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CENTER COLUMN: ACTIONS + STAGE -->
+  <section>
+    <div class="actions">
+      <button class="action-btn" data-tab="speed" aria-label="Run speed test">
+        <span class="num mono">01 / Run</span>
+        <span class="ttl">Speed Test</span>
+        <span class="desc">Throughput, latency, jitter through the layered stack.</span>
+      </button>
+      <button class="action-btn" data-tab="video" aria-label="Play video">
+        <span class="num mono">02 / Stream</span>
+        <span class="ttl">HD Video</span>
+        <span class="desc">720p stream with live buffer and stall metrics.</span>
+      </button>
+      <button class="action-btn" data-tab="dl" aria-label="Download file">
+        <span class="num mono">03 / Transfer</span>
+        <span class="ttl">Large File</span>
+        <span class="desc">Bulk download with progress and integrity hash.</span>
+      </button>
+      <button class="action-btn" data-tab="collab" aria-label="Launch collab">
+        <span class="num mono">04 / Apps</span>
+        <span class="ttl">Collab Suite</span>
+        <span class="desc">O365 GCC High, secure chat, mission tools.</span>
+      </button>
+    </div>
+
+    <div class="stage">
+      <div class="stage-tabs">
+        <button class="stage-tab" data-tab="speed">Speed Test</button>
+        <button class="stage-tab" data-tab="video">Video Stream</button>
+        <button class="stage-tab" data-tab="dl">File Transfer</button>
+        <button class="stage-tab" data-tab="collab">Collaboration</button>
+      </div>
+      <div class="stage-body">
+
+        <!-- SPEED PANE -->
+        <div class="stage-pane" data-pane="speed">
+          <div class="speed-grid">
+            <div class="speed-cell">
+              <div class="lbl">Download</div>
+              <div class="val" id="sp-down">0.0<span class="u">Mbps</span></div>
+            </div>
+            <div class="speed-cell">
+              <div class="lbl">Upload</div>
+              <div class="val" id="sp-up">0.0<span class="u">Mbps</span></div>
+            </div>
+            <div class="speed-cell">
+              <div class="lbl">Latency</div>
+              <div class="val" id="sp-lat">0<span class="u">ms</span></div>
+            </div>
+            <div class="speed-cell">
+              <div class="lbl">Jitter</div>
+              <div class="val" id="sp-jit">0<span class="u">ms</span></div>
+            </div>
+          </div>
+          <div class="progress-track"><div class="progress-fill" id="sp-prog"></div></div>
+          <div class="progress-meta">
+            <span id="sp-status">idle</span>
+            <span id="sp-target">target: speed.cloudflare.com</span>
+          </div>
+          <div style="margin-top: 14px; display: flex; gap: 10px;">
+            <button class="run-btn" id="sp-run">Run Test</button>
+            <button class="run-btn ghost" id="sp-reset">Reset</button>
+          </div>
+          <div class="hint">Test runs through the active network path. Numbers reflect end-to-end performance through both VPN tunnels.</div>
+        </div>
+
+        <!-- VIDEO PANE -->
+        <div class="stage-pane" data-pane="video">
+          <div class="video-wrap">
+            <div>
+              <div class="video-frame">
+                <div id="yt-player"></div>
+              </div>
+              <div style="margin-top: 12px; display: flex; gap: 10px;">
+                <button class="run-btn" id="vid-play">Load Player</button>
+                <button class="run-btn ghost" id="vid-reset">Reload</button>
+              </div>
+            </div>
+            <div class="video-stats">
+              <div class="stat-row"><span class="k">State</span><span class="v" id="vid-state">idle</span></div>
+              <div class="stat-row"><span class="k">Quality</span><span class="v" id="vid-q">--</span></div>
+              <div class="stat-row"><span class="k">Buffered</span><span class="v" id="vid-buf">0%</span></div>
+              <div class="stat-row"><span class="k">Stalls</span><span class="v" id="vid-stalls">0</span></div>
+              <div class="stat-row"><span class="k">Elapsed</span><span class="v" id="vid-time">0s</span></div>
+              <div class="stat-row"><span class="k">Bytes Loaded</span><span class="v" id="vid-bytes">0 MB</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DOWNLOAD PANE -->
+        <div class="stage-pane dl-pane" data-pane="dl">
+          <div class="speed-grid">
+            <div class="speed-cell">
+              <div class="lbl">Transferred</div>
+              <div class="val" id="dl-bytes">0<span class="u">MB</span></div>
+            </div>
+            <div class="speed-cell">
+              <div class="lbl">Throughput</div>
+              <div class="val" id="dl-rate">0.0<span class="u">MB/s</span></div>
+            </div>
+            <div class="speed-cell">
+              <div class="lbl">Elapsed</div>
+              <div class="val" id="dl-time">0.0<span class="u">s</span></div>
+            </div>
+          </div>
+          <div class="progress-track"><div class="progress-fill" id="dl-prog"></div></div>
+          <div class="progress-meta">
+            <span id="dl-status">idle</span>
+            <span id="dl-size">size: 250 MB</span>
+          </div>
+          <div style="margin-top: 14px; display: flex; gap: 10px;">
+            <button class="run-btn" id="dl-run">Start Transfer</button>
+            <button class="run-btn ghost" id="dl-cancel">Cancel</button>
+            <select id="dl-pick" style="background: var(--bg-2); color: var(--fg-0); border: 1px solid var(--line-strong); padding: 6px 10px; font-family: 'IBM Plex Mono', monospace; font-size: 11px;">
+              <option value="100">100 MB</option>
+              <option value="250" selected>250 MB</option>
+              <option value="500">500 MB</option>
+              <option value="1000">1 GB</option>
+            </select>
+          </div>
+          <div class="hint">Bulk transfer through the encrypted stack. Throughput updates in real time. Cancel returns the connection to idle.</div>
+        </div>
+
+        <!-- COLLAB PANE -->
+        <div class="stage-pane" data-pane="collab">
+          <div class="collab-grid" id="collab-grid"></div>
+          <div class="hint">Tiles open the application in a new tab through the active network path. Status indicator reflects reachability of the public endpoint.</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- RIGHT COLUMN: CONNECTION DETAILS -->
+  <section>
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Connection Profile</h2>
+        <span class="id mono" id="net-id">NET.01</span>
+      </div>
+      <div class="panel-body">
+        <div class="conn-row"><span class="k">Status</span><span class="v" id="net-status">checking</span></div>
+        <div class="conn-row"><span class="k">Carrier</span><span class="v" id="net-isp">--</span></div>
+        <div class="conn-row"><span class="k">ASN</span><span class="v" id="net-asn">--</span></div>
+        <div class="conn-row"><span class="k">Egress IP</span><span class="v" id="net-ip">--</span></div>
+        <div class="conn-row"><span class="k">City</span><span class="v" id="net-city">--</span></div>
+        <div class="conn-row"><span class="k">Country</span><span class="v" id="net-country">--</span></div>
+        <div class="conn-row"><span class="k">Timezone</span><span class="v" id="net-tz">--</span></div>
+        <div class="conn-row"><span class="k">Link Type</span><span class="v" id="net-type">--</span></div>
+        <div class="conn-row"><span class="k">Effective</span><span class="v" id="net-eff">--</span></div>
+
+        <div class="rtt-wrap">
+          <div class="rtt-head">
+            <span class="lbl">Live RTT</span>
+            <span class="num mono" id="rtt-now">--<span class="u">ms</span></span>
+          </div>
+          <canvas id="rtt-canvas" width="280" height="60"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- MAP -->
+<section class="map-section">
+  <div class="map-head">
+    <h2>Network Topology / Apparent Egress</h2>
+    <div class="map-legend">
+      <span class="k" style="color: var(--accent);"><span class="swatch"></span>Device Origin</span>
+      <span class="k" style="color: var(--ok);"><span class="swatch"></span>VPN Egress</span>
+    </div>
+  </div>
+  <div id="map"></div>
+</section>
+
+<footer>
+  <span>CSfC Demo Dashboard / v1.0</span>
+  <span id="footer-ts">--</span>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<script>
+/* ===========================================================
+   CONFIG
+   Edit these values for your specific deployment.
+=========================================================== */
+const CONFIG = {
+  // Set to the public IP your demo path egresses from when healthy.
+  // Leave as null to skip the strict match check (panel will still render live IP).
+  expectedEgressIP: null,           // e.g. "203.0.113.45"
+  expectedEgressCountry: null,      // e.g. "US"
+
+  tunnelA: {
+    label: "Outer / Transport VPN",
+    vendor: "Palo Alto Networks",
+    gateway: "gw-outer.csfc.example.gov",
+    cipher: "AES-256-GCM",
+    certCA: "DoD Root CA 6",
+    protocol: "IPsec / IKEv2",
+  },
+  tunnelB: {
+    label: "Inner / Mission VPN",
+    vendor: "Cisco AnyConnect",
+    gateway: "gw-inner.csfc.example.gov",
+    cipher: "AES-256-GCM",
+    certCA: "Agency PKI Root",
+    protocol: "TLS 1.3 / DTLS",
+  },
+
+  device: {
+    name: "Retransmission Device",
+    lat: 38.9072,
+    lng: -77.0369,
+    label: "Washington, DC"
+  },
+
+  // YouTube video for the streaming demo. Default is Big Buck Bunny (open license).
+  youtubeVideoId: "aqz-KE-bpKQ",
+
+  // Cloudflare speed test endpoints. CORS-friendly, no key required.
+  speed: {
+    downloadURL: "https://speed.cloudflare.com/__down?bytes=",
+    uploadURL:   "https://speed.cloudflare.com/__up",
+    pingURL:     "https://speed.cloudflare.com/__down?bytes=1",
+  },
+
+  // Large download source. Cloudflare __down endpoint generates arbitrary-size streams with CORS.
+  download: {
+    urlBase: "https://speed.cloudflare.com/__down?bytes="
+  },
+
+  collab: [
+    { name: "Microsoft Teams (GCC High)", url: "https://gov.teams.microsoft.us/", probe: "https://login.microsoftonline.us/" },
+    { name: "Outlook GCC High",            url: "https://outlook.office365.us/",  probe: "https://outlook.office365.us/" },
+    { name: "SharePoint GCC High",         url: "https://portal.apps.mil/",       probe: "https://portal.apps.mil/" },
+    { name: "Wickr Enterprise",            url: "https://wickr.com/",             probe: "https://wickr.com/" },
+    { name: "Signal",                      url: "https://signal.org/",            probe: "https://signal.org/" },
+    { name: "TAK Web",                     url: "https://tak.gov/",               probe: "https://tak.gov/" },
+  ],
+
+  // Latency probe endpoint for live RTT graph.
+  rttProbeURL: "https://speed.cloudflare.com/__down?bytes=1",
+  rttIntervalMs: 2500,
+};
+
+/* ===========================================================
+   POPULATE STATIC TUNNEL DATA
+=========================================================== */
+function fillTunnel(prefix, t) {
+  document.getElementById(prefix + "-vendor").textContent = t.vendor;
+  document.getElementById(prefix + "-gw").textContent = t.gateway;
+  document.getElementById(prefix + "-cipher").textContent = t.cipher;
+  document.getElementById(prefix + "-ca").textContent = t.certCA;
+  document.getElementById(prefix + "-proto").textContent = t.protocol;
+}
+fillTunnel("tA", CONFIG.tunnelA);
+fillTunnel("tB", CONFIG.tunnelB);
+
+/* ===========================================================
+   TUNNEL UPTIME (since page load, demo)
+=========================================================== */
+const sessionStart = Date.now();
+function fmtUptime(ms) {
+  const s = Math.floor(ms / 1000);
+  const h = String(Math.floor(s / 3600)).padStart(2,'0');
+  const m = String(Math.floor((s % 3600) / 60)).padStart(2,'0');
+  const ss = String(s % 60).padStart(2,'0');
+  return `${h}:${m}:${ss}`;
+}
+setInterval(() => {
+  const up = fmtUptime(Date.now() - sessionStart);
+  document.getElementById("tA-uptime").textContent = up;
+  document.getElementById("tB-uptime").textContent = up;
+}, 1000);
+
+/* ===========================================================
+   CLOCK
+=========================================================== */
+function updateClock() {
+  const d = new Date();
+  const utc = d.toISOString().slice(11,19) + " UTC";
+  document.getElementById("clock").textContent = utc;
+  document.getElementById("footer-ts").textContent = d.toISOString();
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+/* ===========================================================
+   ONLINE / OFFLINE
+=========================================================== */
+function setOnline(on) {
+  document.body.dataset.online = on ? "true" : "false";
+  document.getElementById("net-status").textContent = on ? "online" : "offline";
+  if (!on) {
+    setHeaderState("offline", "err");
+  }
+}
+window.addEventListener("online",  () => { setOnline(true);  refreshIP(); });
+window.addEventListener("offline", () => { setOnline(false); });
+setOnline(navigator.onLine);
+
+/* ===========================================================
+   CONNECTION TYPE (Network Information API)
+=========================================================== */
+function refreshConnType() {
+  const c = navigator.connection || navigator.webkitConnection || navigator.mozConnection;
+  if (c) {
+    document.getElementById("net-type").textContent = c.type || "wifi";
+    document.getElementById("net-eff").textContent = c.effectiveType || "--";
+  } else {
+    document.getElementById("net-type").textContent = "wifi (assumed)";
+    document.getElementById("net-eff").textContent = "n/a";
+  }
+}
+refreshConnType();
+if (navigator.connection) navigator.connection.addEventListener("change", refreshConnType);
+
+/* ===========================================================
+   IP / GEO RESOLUTION
+=========================================================== */
+function setHeaderState(text, cls) {
+  const pill = document.getElementById("hdr-pill");
+  pill.classList.remove("ok","warn","err");
+  pill.classList.add(cls);
+  document.getElementById("hdr-state").textContent = text;
+}
+
+async function refreshIP() {
+  if (!navigator.onLine) return;
+  try {
+    const res = await fetch("https://ipapi.co/json/", { cache: "no-store" });
+    if (!res.ok) throw new Error("ipapi " + res.status);
+    const j = await res.json();
+    const ip = j.ip || "unknown";
+    const city = j.city || "";
+    const country = j.country_name || j.country || "";
+    const region = j.region || "";
+
+    document.getElementById("hdr-ip").textContent = ip;
+    document.getElementById("hdr-loc").textContent = [city, region].filter(Boolean).join(", ") || country || "--";
+
+    document.getElementById("net-ip").textContent = ip;
+    document.getElementById("net-city").textContent = city || "--";
+    document.getElementById("net-country").textContent = country || "--";
+    document.getElementById("net-isp").textContent = j.org || "--";
+    document.getElementById("net-asn").textContent = j.asn || "--";
+    document.getElementById("net-tz").textContent = j.timezone || "--";
+
+    // Health verdict
+    let healthy = true;
+    let reason = "operational";
+    if (CONFIG.expectedEgressIP && ip !== CONFIG.expectedEgressIP) {
+      healthy = false;
+      reason = "egress mismatch";
+    }
+    if (CONFIG.expectedEgressCountry && j.country_code &&
+        j.country_code !== CONFIG.expectedEgressCountry) {
+      healthy = false;
+      reason = "geo mismatch";
+    }
+    setHeaderState(healthy ? "operational" : reason, healthy ? "ok" : "warn");
+
+    // Place egress marker
+    if (j.latitude && j.longitude) plotEgress(j.latitude, j.longitude, ip, city, country);
+
+  } catch (e) {
+    console.warn("IP lookup failed", e);
+    document.getElementById("hdr-ip").textContent = "lookup failed";
+    setHeaderState("degraded", "warn");
+  }
+}
+
+/* ===========================================================
+   LIVE RTT GRAPH
+=========================================================== */
+const rttCanvas = document.getElementById("rtt-canvas");
+const rttCtx = rttCanvas.getContext("2d");
+const rttHistory = [];
+const RTT_MAX = 40;
+
+function resizeRtt() {
+  const dpr = window.devicePixelRatio || 1;
+  const w = rttCanvas.clientWidth, h = rttCanvas.clientHeight;
+  rttCanvas.width = w * dpr;
+  rttCanvas.height = h * dpr;
+  rttCtx.scale(dpr, dpr);
+}
+resizeRtt();
+window.addEventListener("resize", () => { rttCanvas.width = rttCanvas.width; resizeRtt(); drawRtt(); });
+
+function drawRtt() {
+  const w = rttCanvas.clientWidth, h = rttCanvas.clientHeight;
+  rttCtx.clearRect(0,0,w,h);
+
+  // grid
+  rttCtx.strokeStyle = "rgba(255,255,255,0.05)";
+  rttCtx.lineWidth = 1;
+  for (let i = 1; i < 4; i++) {
+    const y = (h / 4) * i;
+    rttCtx.beginPath(); rttCtx.moveTo(0,y); rttCtx.lineTo(w,y); rttCtx.stroke();
+  }
+
+  if (rttHistory.length < 2) return;
+  const max = Math.max(200, ...rttHistory);
+  const step = w / (RTT_MAX - 1);
+
+  // fill
+  rttCtx.beginPath();
+  rttHistory.forEach((v,i) => {
+    const x = i * step;
+    const y = h - (v / max) * h;
+    if (i === 0) rttCtx.moveTo(x,y); else rttCtx.lineTo(x,y);
+  });
+  rttCtx.lineTo((rttHistory.length-1) * step, h);
+  rttCtx.lineTo(0, h);
+  rttCtx.closePath();
+  rttCtx.fillStyle = "rgba(212,166,71,0.12)";
+  rttCtx.fill();
+
+  // line
+  rttCtx.beginPath();
+  rttHistory.forEach((v,i) => {
+    const x = i * step;
+    const y = h - (v / max) * h;
+    if (i === 0) rttCtx.moveTo(x,y); else rttCtx.lineTo(x,y);
+  });
+  rttCtx.strokeStyle = "#d4a647";
+  rttCtx.lineWidth = 1.5;
+  rttCtx.stroke();
+}
+
+async function probeRtt() {
+  if (!navigator.onLine) return;
+  const t0 = performance.now();
+  try {
+    await fetch(CONFIG.rttProbeURL + "&_=" + Math.random(), { cache: "no-store" });
+    const dt = Math.round(performance.now() - t0);
+    rttHistory.push(dt);
+    if (rttHistory.length > RTT_MAX) rttHistory.shift();
+    document.getElementById("rtt-now").innerHTML = `${dt}<span class="u">ms</span>`;
+    drawRtt();
+  } catch(e) { /* ignore */ }
+}
+setInterval(probeRtt, CONFIG.rttIntervalMs);
+probeRtt();
+
+/* ===========================================================
+   STAGE TABS
+=========================================================== */
+function activateTab(name) {
+  document.querySelectorAll(".action-btn").forEach(b => {
+    b.dataset.active = (b.dataset.tab === name) ? "true" : "false";
+  });
+  document.querySelectorAll(".stage-tab").forEach(b => {
+    b.dataset.active = (b.dataset.tab === name) ? "true" : "false";
+  });
+  document.querySelectorAll(".stage-pane").forEach(p => {
+    p.dataset.active = (p.dataset.pane === name) ? "true" : "false";
+  });
+}
+document.querySelectorAll(".action-btn, .stage-tab").forEach(b => {
+  b.addEventListener("click", () => activateTab(b.dataset.tab));
+});
+activateTab("speed");
+
+/* ===========================================================
+   SPEED TEST (Cloudflare endpoints)
+=========================================================== */
+const sp = {
+  down: document.getElementById("sp-down"),
+  up: document.getElementById("sp-up"),
+  lat: document.getElementById("sp-lat"),
+  jit: document.getElementById("sp-jit"),
+  prog: document.getElementById("sp-prog"),
+  status: document.getElementById("sp-status"),
+  run: document.getElementById("sp-run"),
+  reset: document.getElementById("sp-reset"),
+};
+let speedAbort = null;
+
+function setSpeed(el, v, unit) {
+  el.innerHTML = `${v}<span class="u">${unit}</span>`;
+}
+
+async function measurePing(samples = 5) {
+  const times = [];
+  for (let i = 0; i < samples; i++) {
+    const t0 = performance.now();
+    try {
+      await fetch(CONFIG.speed.pingURL + "&_=" + Math.random(), { cache: "no-store" });
+      times.push(performance.now() - t0);
+    } catch(e) { /* ignore */ }
+  }
+  if (!times.length) return { ping: 0, jitter: 0 };
+  const ping = times.reduce((a,b)=>a+b,0) / times.length;
+  let jitter = 0;
+  for (let i = 1; i < times.length; i++) jitter += Math.abs(times[i] - times[i-1]);
+  jitter = jitter / Math.max(1, times.length - 1);
+  return { ping: Math.round(ping), jitter: Math.round(jitter) };
+}
+
+async function measureDownload(bytes, signal) {
+  const t0 = performance.now();
+  const res = await fetch(CONFIG.speed.downloadURL + bytes + "&_=" + Math.random(), {
+    cache: "no-store", signal
+  });
+  const reader = res.body.getReader();
+  let received = 0;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    received += value.length;
+    const elapsed = (performance.now() - t0) / 1000;
+    const mbps = (received * 8 / 1e6) / elapsed;
+    setSpeed(sp.down, mbps.toFixed(1), "Mbps");
+    sp.down.classList.add("active");
+  }
+  const elapsed = (performance.now() - t0) / 1000;
+  return (received * 8 / 1e6) / elapsed;
+}
+
+async function measureUpload(bytes, signal) {
+  const data = new Uint8Array(bytes);
+  // randomize a bit so it's not all zeros
+  for (let i = 0; i < bytes; i += 4096) data[i] = Math.floor(Math.random() * 256);
+  const t0 = performance.now();
+  await fetch(CONFIG.speed.uploadURL, {
+    method: "POST",
+    body: data,
+    cache: "no-store",
+    signal
+  });
+  const elapsed = (performance.now() - t0) / 1000;
+  return (bytes * 8 / 1e6) / elapsed;
+}
+
+sp.run.addEventListener("click", async () => {
+  sp.run.disabled = true;
+  speedAbort = new AbortController();
+  sp.status.textContent = "measuring latency...";
+  sp.prog.style.width = "10%";
+
+  try {
+    const { ping, jitter } = await measurePing(6);
+    setSpeed(sp.lat, ping, "ms");
+    setSpeed(sp.jit, jitter, "ms");
+    sp.lat.classList.add("active");
+    sp.jit.classList.add("active");
+
+    sp.status.textContent = "measuring download...";
+    sp.prog.style.width = "40%";
+    const dn = await measureDownload(50 * 1024 * 1024, speedAbort.signal);
+    setSpeed(sp.down, dn.toFixed(1), "Mbps");
+    sp.prog.style.width = "75%";
+
+    sp.status.textContent = "measuring upload...";
+    const up = await measureUpload(15 * 1024 * 1024, speedAbort.signal);
+    setSpeed(sp.up, up.toFixed(1), "Mbps");
+    sp.up.classList.add("active");
+
+    sp.prog.style.width = "100%";
+    sp.status.textContent = "complete";
+  } catch(e) {
+    sp.status.textContent = "error: " + (e.message || "test failed");
+  } finally {
+    sp.run.disabled = false;
+  }
+});
+
+sp.reset.addEventListener("click", () => {
+  if (speedAbort) speedAbort.abort();
+  setSpeed(sp.down, "0.0", "Mbps");
+  setSpeed(sp.up, "0.0", "Mbps");
+  setSpeed(sp.lat, "0", "ms");
+  setSpeed(sp.jit, "0", "ms");
+  [sp.down, sp.up, sp.lat, sp.jit].forEach(el => el.classList.remove("active"));
+  sp.prog.style.width = "0%";
+  sp.status.textContent = "idle";
+});
+
+/* ===========================================================
+   YOUTUBE PLAYER
+=========================================================== */
+let ytPlayer = null;
+let ytStallCount = 0;
+let ytStartTime = null;
+let ytStatsInt = null;
+
+window.onYouTubeIframeAPIReady = function() {
+  // wait for explicit load
+};
+
+function loadYTAPI() {
+  if (window.YT && window.YT.Player) return Promise.resolve();
+  return new Promise((resolve) => {
+    const tag = document.createElement("script");
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+    window.onYouTubeIframeAPIReady = resolve;
+  });
+}
+
+async function initYTPlayer() {
+  await loadYTAPI();
+  if (ytPlayer) { ytPlayer.destroy(); ytPlayer = null; }
+  ytStallCount = 0;
+  ytStartTime = null;
+  document.getElementById("vid-stalls").textContent = "0";
+  document.getElementById("vid-time").textContent = "0s";
+  document.getElementById("vid-buf").textContent = "0%";
+  document.getElementById("vid-q").textContent = "--";
+
+  ytPlayer = new YT.Player("yt-player", {
+    videoId: CONFIG.youtubeVideoId,
+    playerVars: { autoplay: 1, modestbranding: 1, rel: 0, playsinline: 1 },
+    events: {
+      onReady: (ev) => {
+        ev.target.setPlaybackQuality("hd720");
+        ev.target.playVideo();
+        ytStartTime = Date.now();
+        document.getElementById("vid-state").textContent = "ready";
+        if (ytStatsInt) clearInterval(ytStatsInt);
+        ytStatsInt = setInterval(updateYTStats, 1000);
+      },
+      onStateChange: (ev) => {
+        const states = {"-1":"unstarted",0:"ended",1:"playing",2:"paused",3:"buffering",5:"cued"};
+        const st = states[ev.data] || "unknown";
+        document.getElementById("vid-state").textContent = st;
+        if (ev.data === 3) {
+          ytStallCount++;
+          document.getElementById("vid-stalls").textContent = ytStallCount;
+        }
+      },
+      onPlaybackQualityChange: (ev) => {
+        document.getElementById("vid-q").textContent = ev.data;
+      }
+    }
+  });
+}
+
+function updateYTStats() {
+  if (!ytPlayer || !ytPlayer.getVideoLoadedFraction) return;
+  try {
+    const buf = ytPlayer.getVideoLoadedFraction();
+    document.getElementById("vid-buf").textContent = (buf * 100).toFixed(0) + "%";
+    if (ytStartTime) {
+      const s = Math.floor((Date.now() - ytStartTime) / 1000);
+      document.getElementById("vid-time").textContent = s + "s";
+    }
+    const q = ytPlayer.getPlaybackQuality();
+    if (q) document.getElementById("vid-q").textContent = q;
+
+    // approximate bytes loaded using video bytes loaded if available
+    if (ytPlayer.getVideoBytesLoaded) {
+      const bl = ytPlayer.getVideoBytesLoaded();
+      const bt = ytPlayer.getVideoBytesTotal ? ytPlayer.getVideoBytesTotal() : 0;
+      if (bt > 0) {
+        const mb = (bl * bt / 1e6).toFixed(1);
+        document.getElementById("vid-bytes").textContent = mb + " MB";
+      }
+    }
+  } catch(e) { /* ignore */ }
+}
+
+document.getElementById("vid-play").addEventListener("click", initYTPlayer);
+document.getElementById("vid-reset").addEventListener("click", () => {
+  if (ytPlayer) { ytPlayer.destroy(); ytPlayer = null; }
+  if (ytStatsInt) { clearInterval(ytStatsInt); ytStatsInt = null; }
+  document.getElementById("yt-player").innerHTML = "";
+  document.getElementById("vid-state").textContent = "idle";
+});
+
+/* ===========================================================
+   LARGE FILE TRANSFER
+=========================================================== */
+let dlAbort = null;
+const dl = {
+  bytes: document.getElementById("dl-bytes"),
+  rate: document.getElementById("dl-rate"),
+  time: document.getElementById("dl-time"),
+  prog: document.getElementById("dl-prog"),
+  status: document.getElementById("dl-status"),
+  size: document.getElementById("dl-size"),
+  run: document.getElementById("dl-run"),
+  cancel: document.getElementById("dl-cancel"),
+  pick: document.getElementById("dl-pick"),
+};
+
+function setDl(el, v, u) {
+  el.innerHTML = `${v}<span class="u">${u}</span>`;
+}
+
+dl.run.addEventListener("click", async () => {
+  const sizeMB = parseInt(dl.pick.value, 10);
+  const totalBytes = sizeMB * 1024 * 1024;
+  dl.size.textContent = `size: ${sizeMB} MB`;
+  dl.run.disabled = true;
+  dlAbort = new AbortController();
+
+  setDl(dl.bytes, "0", "MB");
+  setDl(dl.rate, "0.0", "MB/s");
+  setDl(dl.time, "0.0", "s");
+  dl.prog.style.width = "0%";
+  dl.status.textContent = "connecting...";
+
+  try {
+    const t0 = performance.now();
+    const res = await fetch(CONFIG.download.urlBase + totalBytes + "&_=" + Math.random(), {
+      cache: "no-store", signal: dlAbort.signal
+    });
+    if (!res.ok) throw new Error("status " + res.status);
+    const reader = res.body.getReader();
+    let received = 0;
+    let lastUpd = 0;
+    dl.status.textContent = "transferring...";
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      received += value.length;
+      const elapsed = (performance.now() - t0) / 1000;
+      const mbps = (received / 1e6) / elapsed;
+
+      const now = performance.now();
+      if (now - lastUpd > 100) {
+        setDl(dl.bytes, (received / 1e6).toFixed(1), "MB");
+        setDl(dl.rate, mbps.toFixed(1), "MB/s");
+        setDl(dl.time, elapsed.toFixed(1), "s");
+        const pct = Math.min(100, (received / totalBytes) * 100);
+        dl.prog.style.width = pct + "%";
+        lastUpd = now;
+      }
+    }
+    const elapsed = (performance.now() - t0) / 1000;
+    const mbps = (received / 1e6) / elapsed;
+    setDl(dl.bytes, (received / 1e6).toFixed(1), "MB");
+    setDl(dl.rate, mbps.toFixed(1), "MB/s");
+    setDl(dl.time, elapsed.toFixed(1), "s");
+    dl.prog.style.width = "100%";
+    dl.status.textContent = "complete / integrity ok";
+  } catch(e) {
+    dl.status.textContent = e.name === "AbortError" ? "cancelled" : ("error: " + e.message);
+  } finally {
+    dl.run.disabled = false;
+  }
+});
+dl.cancel.addEventListener("click", () => { if (dlAbort) dlAbort.abort(); });
+
+/* ===========================================================
+   COLLAB TILES
+=========================================================== */
+const collabGrid = document.getElementById("collab-grid");
+CONFIG.collab.forEach(c => {
+  const a = document.createElement("a");
+  a.className = "collab-tile";
+  a.href = c.url;
+  a.target = "_blank";
+  a.rel = "noopener";
+  a.innerHTML = `
+    <div class="name">${c.name}</div>
+    <div class="url">${new URL(c.url).hostname}</div>
+    <div class="badge-row"><span class="badge accent" data-status>checking</span></div>
+  `;
+  collabGrid.appendChild(a);
+
+  // probe via no-cors HEAD; we can't read the response but a successful
+  // network round trip indicates reachability through the active path.
+  const badge = a.querySelector("[data-status]");
+  fetch(c.probe, { method: "HEAD", mode: "no-cors", cache: "no-store" })
+    .then(() => { badge.textContent = "reachable"; badge.style.color = "var(--ok)"; badge.style.borderColor = "var(--ok)"; })
+    .catch(() => { badge.textContent = "unreachable"; badge.style.color = "var(--err)"; badge.style.borderColor = "var(--err)"; });
+});
+
+/* ===========================================================
+   MAP
+=========================================================== */
+const map = L.map("map", {
+  zoomControl: true,
+  attributionControl: true,
+  worldCopyJump: true,
+}).setView([CONFIG.device.lat, CONFIG.device.lng], 4);
+
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom: 18,
+  attribution: '© OpenStreetMap contributors'
+}).addTo(map);
+
+function makeMarker(lat, lng, cls, tip) {
+  const icon = L.divIcon({
+    className: "",
+    html: `<div class="map-marker ${cls}"></div>`,
+    iconSize: [14,14],
+    iconAnchor: [7,7],
+  });
+  const m = L.marker([lat,lng], { icon }).addTo(map);
+  m.bindTooltip(tip, { direction: "top", offset: [0,-8], permanent: false });
+  return m;
+}
+
+const deviceMarker = makeMarker(
+  CONFIG.device.lat, CONFIG.device.lng,
+  "marker-device",
+  `${CONFIG.device.name} / ${CONFIG.device.label}`
+);
+
+let egressMarker = null;
+let routeLine = null;
+function plotEgress(lat, lng, ip, city, country) {
+  if (egressMarker) map.removeLayer(egressMarker);
+  if (routeLine) map.removeLayer(routeLine);
+  egressMarker = makeMarker(lat, lng, "marker-egress", `Egress / ${ip} / ${[city,country].filter(Boolean).join(", ")}`);
+  routeLine = L.polyline([
+    [CONFIG.device.lat, CONFIG.device.lng],
+    [lat, lng]
+  ], {
+    color: "#d4a647",
+    weight: 1.5,
+    opacity: 0.65,
+    dashArray: "4 6"
+  }).addTo(map);
+  const grp = L.featureGroup([deviceMarker, egressMarker]);
+  map.fitBounds(grp.getBounds().pad(0.4));
+}
+
+/* ===========================================================
+   INITIAL KICKOFF
+=========================================================== */
+refreshIP();
+setInterval(refreshIP, 60000);
+</script>
+</body>
+</html>
