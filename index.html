@@ -94,7 +94,7 @@
     z-index: 1;
     height: 100vh;
     display: grid;
-    grid-template-rows: 52px 92px 1fr 280px;
+    grid-template-rows: 52px 100px 1fr 280px;
     gap: 10px;
     padding: 10px;
   }
@@ -233,7 +233,7 @@
   /* SVG VPN diagram */
   .vpn-diagram {
     flex: 1;
-    height: 68px;
+    height: 78px;
     min-width: 0;
   }
   .vpn-diagram svg { width: 100%; height: 100%; display: block; }
@@ -248,58 +248,60 @@
     fill: var(--bg-2);
     stroke: var(--silver);
   }
+  .vpn-node.endpoint.muted {
+    fill: var(--bg-3);
+    stroke: var(--line-strong);
+  }
   .vpn-node.tunnel-active {
-    fill: rgba(52,196,123,0.12);
-    stroke: var(--ok);
-    filter: drop-shadow(0 0 6px rgba(52,196,123,0.4));
+    fill: rgba(52,196,123,0.22);
+    stroke: var(--ok-bright);
+    stroke-width: 1.6;
+    filter: drop-shadow(0 0 10px rgba(52,196,123,0.55));
   }
   .vpn-icon {
-    fill: var(--fg-2);
-    transition: fill 0.4s;
+    fill: var(--fg-3);
+    stroke: var(--fg-3);
+    transition: all 0.4s cubic-bezier(0.2, 0, 0.2, 1);
   }
-  .vpn-icon.endpoint-active { fill: var(--silver); }
-  .vpn-icon.tunnel-active { fill: var(--ok-bright); }
+  .vpn-icon.endpoint-active {
+    fill: var(--silver);
+    stroke: var(--silver);
+  }
+  .vpn-icon.tunnel-active {
+    fill: var(--ok-bright);
+    stroke: var(--ok-bright);
+    stroke-width: 1.8;
+    filter: drop-shadow(0 0 6px rgba(77,213,140,0.6));
+  }
   .vpn-label {
     font-family: 'Inter', sans-serif;
     font-size: 9px;
     font-weight: 600;
-    fill: var(--fg-2);
+    fill: var(--fg-3);
     letter-spacing: 0.02em;
     text-anchor: middle;
     transition: fill 0.4s;
   }
-  .vpn-label.active { fill: var(--ok-bright); }
-  .vpn-label.endpoint-active { fill: var(--fg-0); }
-  .vpn-sublabel {
-    font-family: 'Inter', sans-serif;
-    font-size: 8px;
+  .vpn-label .label-sub {
+    font-size: 7.5px;
     font-weight: 500;
     fill: var(--fg-3);
-    text-anchor: middle;
+    letter-spacing: 0.02em;
+    transition: fill 0.4s;
   }
+  .vpn-label.active { fill: var(--ok-bright); }
+  .vpn-label.active .label-sub { fill: var(--ok); }
+  .vpn-label.endpoint-active { fill: var(--fg-0); }
   .vpn-link {
-    stroke: var(--fg-3);
+    stroke: var(--fg-4);
     stroke-width: 1.5;
     fill: none;
-    transition: stroke 0.4s;
+    transition: all 0.4s;
   }
   .vpn-link.active {
     stroke: var(--ok);
-    stroke-width: 2;
-    filter: drop-shadow(0 0 4px rgba(52,196,123,0.5));
-  }
-  .vpn-flow-particle {
-    fill: var(--ok-bright);
-    opacity: 0;
-  }
-  .vpn-link.active + .vpn-flow-particle {
-    opacity: 1;
-  }
-  @keyframes flowMove {
-    0% { transform: translateX(0); opacity: 0; }
-    20% { opacity: 1; }
-    80% { opacity: 1; }
-    100% { transform: translateX(var(--flow-distance)); opacity: 0; }
+    stroke-width: 2.4;
+    filter: drop-shadow(0 0 6px rgba(52,196,123,0.65));
   }
   .lock-icon {
     transition: opacity 0.4s;
@@ -1081,7 +1083,7 @@
     </div>
 
     <div class="vpn-diagram">
-      <svg viewBox="0 0 700 68" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="0 0 700 78" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
         <!-- Connection lines (drawn first so they sit behind nodes) -->
         <line id="link-1" class="vpn-link" x1="60" y1="34" x2="200" y2="34"/>
         <line id="link-2" class="vpn-link" x1="260" y1="34" x2="400" y2="34"/>
@@ -1102,33 +1104,34 @@
         <!-- Endpoint: Device (iPad) -->
         <g id="node-device">
           <rect class="vpn-node endpoint" x="14" y="14" width="40" height="40" rx="10"/>
-          <!-- iPad icon -->
-          <rect class="vpn-icon endpoint-active" x="22" y="22" width="24" height="20" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.4"/>
+          <rect class="vpn-icon endpoint-active" x="22" y="22" width="24" height="20" rx="2.5" fill="none" stroke-width="1.4"/>
           <circle class="vpn-icon endpoint-active" cx="34" cy="38" r="0.8"/>
           <text class="vpn-label endpoint-active" x="34" y="64">iPad</text>
         </g>
 
-        <!-- Inner VPN node (now in position 2: closer to device) -->
+        <!-- Inner VPN node -->
         <g id="node-inner">
           <rect class="vpn-node" id="node-inner-rect" x="200" y="14" width="60" height="40" rx="10"/>
-          <path class="vpn-icon" id="node-inner-icon" d="M 230 22 l -7 3 v 6 c 0 4 3 8 7 9 c 4 -1 7 -5 7 -9 v -6 z M 226 31 l 3 3 l 5 -6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+          <path class="vpn-icon" id="node-inner-icon" d="M 230 22 l -7 3 v 6 c 0 4 3 8 7 9 c 4 -1 7 -5 7 -9 v -6 z M 226 31 l 3 3 l 5 -6" fill="none" stroke-width="1.4" stroke-linejoin="round"/>
           <text class="vpn-label" id="node-inner-label" x="230" y="64">Inner VPN</text>
         </g>
 
-        <!-- Outer VPN node, branded as Privoro SHDW (now in position 3: transport layer) -->
+        <!-- Outer VPN (Privoro SHDW) node -->
         <g id="node-outer">
           <rect class="vpn-node" id="node-outer-rect" x="400" y="14" width="60" height="40" rx="10"/>
-          <path class="vpn-icon" id="node-outer-icon" d="M 430 22 l -7 3 v 6 c 0 4 3 8 7 9 c 4 -1 7 -5 7 -9 v -6 z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
-          <text class="vpn-label" id="node-outer-label" x="430" y="64">Privoro SHDW</text>
+          <path class="vpn-icon" id="node-outer-icon" d="M 430 22 l -7 3 v 6 c 0 4 3 8 7 9 c 4 -1 7 -5 7 -9 v -6 z" fill="none" stroke-width="1.4" stroke-linejoin="round"/>
+          <text class="vpn-label" id="node-outer-label" x="430" y="64">
+            Outer VPN<tspan class="label-sub" x="430" dy="10">(Privoro SHDW)</tspan>
+          </text>
         </g>
 
-        <!-- Internet endpoint -->
+        <!-- Internet endpoint: muted by default, glows green when full path is up -->
         <g id="node-internet">
-          <rect class="vpn-node endpoint" x="600" y="14" width="60" height="40" rx="10"/>
-          <circle class="vpn-icon endpoint-active" cx="630" cy="34" r="9" fill="none" stroke="currentColor" stroke-width="1.4"/>
-          <ellipse class="vpn-icon endpoint-active" cx="630" cy="34" rx="4" ry="9" fill="none" stroke="currentColor" stroke-width="1.4"/>
-          <line class="vpn-icon endpoint-active" x1="621" y1="34" x2="639" y2="34" stroke="currentColor" stroke-width="1.4"/>
-          <text class="vpn-label endpoint-active" x="630" y="64">Internet</text>
+          <rect class="vpn-node endpoint muted" id="node-internet-rect" x="600" y="14" width="60" height="40" rx="10"/>
+          <circle class="vpn-icon" id="node-internet-icon-1" cx="630" cy="34" r="9" fill="none" stroke-width="1.4"/>
+          <ellipse class="vpn-icon" id="node-internet-icon-2" cx="630" cy="34" rx="4" ry="9" fill="none" stroke-width="1.4"/>
+          <line class="vpn-icon" id="node-internet-icon-3" x1="621" y1="34" x2="639" y2="34" stroke-width="1.4"/>
+          <text class="vpn-label" id="node-internet-label" x="630" y="64">Internet</text>
         </g>
       </svg>
     </div>
@@ -1562,8 +1565,13 @@ function paintTunnel() {
   const innerRect = document.getElementById("node-inner-rect");
   const innerIcon = document.getElementById("node-inner-icon");
   const innerLabel = document.getElementById("node-inner-label");
+  const inetRect = document.getElementById("node-internet-rect");
+  const inetIcon1 = document.getElementById("node-internet-icon-1");
+  const inetIcon2 = document.getElementById("node-internet-icon-2");
+  const inetIcon3 = document.getElementById("node-internet-icon-3");
+  const inetLabel = document.getElementById("node-internet-label");
 
-  // Visual order: iPad -> Inner VPN -> Privoro SHDW (Outer) -> Internet
+  // Visual order: iPad -> Inner VPN -> Outer VPN (Privoro SHDW) -> Internet
   // Link 1 (Device -> Inner): active when inner tunnel is up
   link1.classList.toggle("active", innerActive);
   innerRect.classList.toggle("tunnel-active", innerActive);
@@ -1579,8 +1587,14 @@ function paintTunnel() {
   outerLabel.classList.toggle("active", fullPath);
   lock2.classList.toggle("active", fullPath);
 
-  // Link 3 (Outer -> Internet): the cleartext transport leg, active when full path established
+  // Link 3 (Outer -> Internet) and the Internet endpoint glow on full path
   link3.classList.toggle("active", fullPath);
+  inetRect.classList.toggle("tunnel-active", fullPath);
+  inetRect.classList.toggle("muted", !fullPath);
+  inetIcon1.classList.toggle("tunnel-active", fullPath);
+  inetIcon2.classList.toggle("tunnel-active", fullPath);
+  inetIcon3.classList.toggle("tunnel-active", fullPath);
+  inetLabel.classList.toggle("active", fullPath);
 }
 
 function setHero(state, label, sub) {
