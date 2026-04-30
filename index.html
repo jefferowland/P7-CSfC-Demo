@@ -7,7 +7,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
   integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
@@ -15,42 +15,60 @@
 <style>
   :root {
     --bg-0: #0a0d10;
-    --bg-1: #121619;
-    --bg-2: #181d22;
-    --bg-3: #20262d;
-    --bg-4: #2a3138;
-    --line: rgba(255,255,255,0.06);
-    --line-strong: rgba(255,255,255,0.12);
+    --bg-1: #161a1f;
+    --bg-2: #1d2229;
+    --bg-3: #262c34;
+    --bg-4: #2e353e;
+    --line: rgba(255,255,255,0.07);
+    --line-strong: rgba(255,255,255,0.13);
     --line-accent: rgba(0,119,139,0.35);
-    --fg-0: #f4f5f7;
+    --fg-0: #f5f6f8;
     --fg-1: #b9c0c8;
     --fg-2: #7d858f;
     --fg-3: #4a5159;
     --fg-4: #2e353c;
     --privoro: #00778B;
-    --privoro-bright: #00a3bf;
+    --privoro-bright: #00b3d1;
     --privoro-dim: #004f5e;
     --privoro-deep: #00323d;
     --silver: #b0b4b8;
-    --ok: #5ec487;
-    --ok-dim: #1f4d33;
-    --warn: #e8b14a;
+    --ok: #34c47b;
+    --ok-bright: #4dd58c;
+    --ok-dim: #1f5d3a;
+    --warn: #f0b340;
     --warn-dim: #5a4218;
-    --err: #e4604c;
+    --err: #ff5e4f;
     --err-dim: #5a2419;
+
+    /* Apple-style radii */
+    --r-xs: 6px;
+    --r-sm: 10px;
+    --r-md: 14px;
+    --r-lg: 18px;
+    --r-xl: 24px;
+    --r-pill: 999px;
+
+    /* Shadows */
+    --shadow-1: 0 1px 2px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.04);
+    --shadow-2: 0 4px 16px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05);
+    --shadow-glow-ok: 0 0 24px rgba(52,196,123,0.35);
+    --shadow-glow-pv: 0 0 24px rgba(0,179,209,0.35);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
   body {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
     background: var(--bg-0);
     color: var(--fg-0);
-    font-size: 12px;
+    font-size: 13px;
     line-height: 1.45;
+    letter-spacing: -0.005em;
     overflow: hidden;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     text-rendering: geometricPrecision;
+    font-feature-settings: "ss01", "cv11";
   }
 
   body::before {
@@ -69,16 +87,16 @@
     z-index: 0;
   }
 
-  .mono { font-family: 'JetBrains Mono', monospace; font-feature-settings: "tnum" 1, "calt" 0; }
+  .mono { font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace; font-feature-settings: "tnum" 1, "calt" 0; letter-spacing: 0; }
 
   .app {
     position: relative;
     z-index: 1;
     height: 100vh;
     display: grid;
-    grid-template-rows: 48px 80px 1fr 280px;
-    gap: 8px;
-    padding: 8px;
+    grid-template-rows: 52px 92px 1fr 280px;
+    gap: 10px;
+    padding: 10px;
   }
 
   /* HEADER */
@@ -87,17 +105,18 @@
     grid-template-columns: auto 1fr auto;
     align-items: center;
     gap: 24px;
-    padding: 0 18px;
+    padding: 0 20px;
     background: var(--bg-1);
     border: 1px solid var(--line);
-    border-bottom: 1px solid var(--line-accent);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-1);
     position: relative;
   }
   .brand {
-    display: flex; align-items: center; gap: 16px;
+    display: flex; align-items: center; gap: 18px;
   }
   .brand-logo {
-    height: 30px;
+    height: 32px;
     color: var(--silver);
     display: flex; align-items: center;
   }
@@ -107,141 +126,189 @@
     display: block;
   }
   .brand-divider {
-    width: 1px; height: 26px;
+    width: 1px; height: 28px;
     background: var(--line-strong);
   }
   .brand-context { display: flex; flex-direction: column; }
   .brand-title {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-weight: 600;
-    font-size: 13px;
-    letter-spacing: 0.04em;
+    font-size: 14px;
+    letter-spacing: -0.015em;
     color: var(--fg-0);
   }
   .brand-sub {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 11px;
     color: var(--fg-2);
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    margin-top: 2px;
+    letter-spacing: 0.02em;
+    margin-top: 1px;
   }
 
   .header-right {
-    display: flex; align-items: center; gap: 14px;
+    display: flex; align-items: center; gap: 12px;
   }
   .clock {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    font-size: 12px;
     color: var(--fg-1);
-    letter-spacing: 0.05em;
+    letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
   }
   .icon-btn {
-    background: transparent;
+    background: var(--bg-2);
     border: 1px solid var(--line-strong);
     color: var(--fg-1);
-    width: 30px; height: 30px;
+    width: 34px; height: 34px;
     display: grid; place-items: center;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: all 0.2s cubic-bezier(0.2, 0, 0.2, 1);
+    border-radius: var(--r-pill);
   }
   .icon-btn:hover {
     border-color: var(--privoro);
     color: var(--privoro-bright);
-    background: rgba(0,119,139,0.06);
+    background: rgba(0,119,139,0.08);
+    transform: scale(1.05);
   }
-  .icon-btn svg { width: 15px; height: 15px; }
+  .icon-btn:active { transform: scale(0.96); }
+  .icon-btn svg { width: 16px; height: 16px; }
 
-  /* HERO STATUS BAND */
+  /* HERO with VPN flow */
   .hero {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr 280px;
     gap: 0;
     align-items: stretch;
     background: linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 100%);
     border: 1px solid var(--line);
-    border-left: 3px solid var(--privoro);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-1);
     position: relative;
     overflow: hidden;
   }
-  .hero[data-state="offline"] { border-left-color: var(--fg-3); }
-  .hero[data-state="degraded"] { border-left-color: var(--warn); }
   .hero::before {
     content: '';
     position: absolute; inset: 0;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='52' viewBox='0 0 60 52'><path d='M30 1 L58 17 L58 35 L30 51 L2 35 L2 17 Z' fill='none' stroke='%2300778B' stroke-width='0.6' opacity='0.10'/></svg>");
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='52' viewBox='0 0 60 52'><path d='M30 1 L58 17 L58 35 L30 51 L2 35 L2 17 Z' fill='none' stroke='%2300778B' stroke-width='0.6' opacity='0.08'/></svg>");
     background-position: right center;
     background-repeat: repeat;
     pointer-events: none;
   }
   .hero > * { position: relative; z-index: 1; }
 
-  .hero-status {
-    padding: 12px 24px;
-    display: flex; flex-direction: column; justify-content: center; gap: 4px;
+  .vpn-flow {
+    padding: 12px 22px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
   }
-  .hero-eyebrow {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
+  .vpn-flow-status {
+    display: flex; flex-direction: column; gap: 2px;
+    min-width: 130px;
+  }
+  .vpn-flow-eyebrow {
+    font-size: 10px;
     color: var(--fg-2);
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-  }
-  .hero-state {
-    display: flex; align-items: center; gap: 14px;
-  }
-  .state-light {
-    width: 14px; height: 14px;
-    border-radius: 50%;
-    background: var(--ok);
-    box-shadow: 0 0 0 4px rgba(94,196,135,0.18), 0 0 14px var(--ok);
-    position: relative;
-    flex-shrink: 0;
-  }
-  .state-light::after {
-    content: ''; position: absolute; inset: -4px;
-    border-radius: 50%;
-    border: 1px solid var(--ok);
-    opacity: 0.4;
-    animation: heroBeat 2.4s ease-out infinite;
-  }
-  @keyframes heroBeat {
-    0% { transform: scale(0.8); opacity: 0.6; }
-    100% { transform: scale(2.2); opacity: 0; }
-  }
-  .hero[data-state="offline"] .state-light {
-    background: var(--fg-3);
-    box-shadow: 0 0 0 4px rgba(74,81,89,0.18);
-    animation: none;
-  }
-  .hero[data-state="offline"] .state-light::after { display: none; }
-  .hero[data-state="degraded"] .state-light {
-    background: var(--warn);
-    box-shadow: 0 0 0 4px rgba(232,177,74,0.18), 0 0 14px var(--warn);
-  }
-  .hero[data-state="degraded"] .state-light::after { border-color: var(--warn); }
-
-  .state-text {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    font-size: 30px;
     letter-spacing: 0.04em;
-    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .vpn-flow-state {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
     color: var(--fg-0);
-    line-height: 1;
+    line-height: 1.1;
   }
-  .hero[data-state="offline"] .state-text { color: var(--fg-3); }
-  .hero[data-state="degraded"] .state-text { color: var(--warn); }
-  .hero-statesub {
-    font-family: 'JetBrains Mono', monospace;
+  .hero[data-state="offline"] .vpn-flow-state { color: var(--fg-2); }
+  .hero[data-state="degraded"] .vpn-flow-state { color: var(--warn); }
+  .vpn-flow-sub {
     font-size: 11px;
-    color: var(--fg-1);
-    letter-spacing: 0.06em;
-    margin-top: 2px;
+    color: var(--fg-2);
+    font-weight: 500;
+    letter-spacing: 0;
   }
+
+  /* SVG VPN diagram */
+  .vpn-diagram {
+    flex: 1;
+    height: 68px;
+    min-width: 0;
+  }
+  .vpn-diagram svg { width: 100%; height: 100%; display: block; }
+
+  .vpn-node {
+    fill: var(--bg-3);
+    stroke: var(--line-strong);
+    stroke-width: 1;
+    transition: all 0.4s cubic-bezier(0.2, 0, 0.2, 1);
+  }
+  .vpn-node.endpoint {
+    fill: var(--bg-2);
+    stroke: var(--silver);
+  }
+  .vpn-node.tunnel-active {
+    fill: rgba(52,196,123,0.12);
+    stroke: var(--ok);
+    filter: drop-shadow(0 0 6px rgba(52,196,123,0.4));
+  }
+  .vpn-icon {
+    fill: var(--fg-2);
+    transition: fill 0.4s;
+  }
+  .vpn-icon.endpoint-active { fill: var(--silver); }
+  .vpn-icon.tunnel-active { fill: var(--ok-bright); }
+  .vpn-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    fill: var(--fg-2);
+    letter-spacing: 0.02em;
+    text-anchor: middle;
+    transition: fill 0.4s;
+  }
+  .vpn-label.active { fill: var(--ok-bright); }
+  .vpn-label.endpoint-active { fill: var(--fg-0); }
+  .vpn-sublabel {
+    font-family: 'Inter', sans-serif;
+    font-size: 8px;
+    font-weight: 500;
+    fill: var(--fg-3);
+    text-anchor: middle;
+  }
+  .vpn-link {
+    stroke: var(--fg-3);
+    stroke-width: 1.5;
+    fill: none;
+    transition: stroke 0.4s;
+  }
+  .vpn-link.active {
+    stroke: var(--ok);
+    stroke-width: 2;
+    filter: drop-shadow(0 0 4px rgba(52,196,123,0.5));
+  }
+  .vpn-flow-particle {
+    fill: var(--ok-bright);
+    opacity: 0;
+  }
+  .vpn-link.active + .vpn-flow-particle {
+    opacity: 1;
+  }
+  @keyframes flowMove {
+    0% { transform: translateX(0); opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { transform: translateX(var(--flow-distance)); opacity: 0; }
+  }
+  .lock-icon {
+    transition: opacity 0.4s;
+    opacity: 0;
+  }
+  .lock-icon.active { opacity: 1; }
 
   .hero-rtt {
-    padding: 10px 24px 10px 18px;
+    padding: 12px 22px 12px 18px;
     border-left: 1px solid var(--line);
     display: flex; flex-direction: column; justify-content: center; gap: 4px;
     min-width: 240px;
@@ -249,59 +316,70 @@
   .hero-rtt-head {
     display: flex; justify-content: space-between; align-items: baseline;
   }
+  .hero-rtt-label {
+    font-size: 10px;
+    color: var(--fg-2);
+    letter-spacing: 0.04em;
+    font-weight: 500;
+  }
   .hero-rtt-val {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
     font-weight: 500;
     font-size: 22px;
     color: var(--fg-0);
     line-height: 1.1;
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
   }
-  .hero-rtt-val .u { font-size: 10px; color: var(--fg-2); margin-left: 3px; }
+  .hero-rtt-val .u { font-size: 11px; color: var(--fg-2); margin-left: 3px; font-weight: 400; }
   #rtt-canvas {
     width: 100%;
-    height: 36px;
+    height: 38px;
     display: block;
-    margin-top: 2px;
+    margin-top: 4px;
   }
 
   /* MAIN CONTENT */
   main {
     display: grid;
-    grid-template-columns: 280px 1fr 280px;
-    gap: 8px;
+    grid-template-columns: 290px 1fr 290px;
+    gap: 10px;
     min-height: 0;
   }
 
   .panel {
     background: var(--bg-1);
     border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-1);
     display: flex; flex-direction: column;
     min-height: 0;
     position: relative;
+    overflow: hidden;
   }
   .panel-head {
-    padding: 7px 14px;
+    padding: 10px 16px;
     border-bottom: 1px solid var(--line);
     display: flex; justify-content: space-between; align-items: center;
     background: var(--bg-2);
     flex-shrink: 0;
   }
   .panel-head h2 {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-weight: 600;
-    font-size: 10px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--fg-1);
+    font-size: 12px;
+    letter-spacing: -0.01em;
+    color: var(--fg-0);
   }
   .panel-head .id {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    font-size: 10px;
     color: var(--fg-3);
-    letter-spacing: 0.1em;
+    letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
   }
   .panel-body {
-    padding: 10px 14px;
+    padding: 12px 16px;
     overflow: auto;
     flex: 1;
     min-height: 0;
@@ -311,29 +389,34 @@
   .col-left {
     display: grid;
     grid-template-rows: 1fr 1fr;
-    gap: 8px;
+    gap: 10px;
     min-height: 0;
   }
   .tunnel-state {
     display: flex; align-items: center; gap: 8px;
-    padding: 5px 9px;
-    margin-bottom: 8px;
+    padding: 7px 12px;
+    margin-bottom: 10px;
     border: 1px solid;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+    border-radius: var(--r-sm);
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0;
   }
-  .tunnel-state.ok { border-color: var(--ok); color: var(--ok); background: rgba(94,196,135,0.05); }
+  .tunnel-state.ok {
+    border-color: rgba(52,196,123,0.4);
+    color: var(--ok-bright);
+    background: rgba(52,196,123,0.08);
+  }
   .tunnel-state .meta {
     margin-left: auto;
     color: var(--fg-2);
-    font-weight: 400;
-    letter-spacing: 0.04em;
+    font-weight: 500;
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    font-size: 10px;
   }
   .tunnel-state .dot {
-    width: 6px; height: 6px;
+    width: 7px; height: 7px;
     border-radius: 50%;
     background: currentColor;
     box-shadow: 0 0 6px currentColor;
@@ -345,186 +428,197 @@
   }
   .kv-row {
     display: grid;
-    grid-template-columns: 70px 1fr;
-    padding: 3px 0;
+    grid-template-columns: 76px 1fr;
+    padding: 5px 0;
     border-bottom: 1px solid var(--line);
     align-items: center;
-    gap: 8px;
+    gap: 10px;
   }
   .kv-row:last-child { border-bottom: none; }
   .kv-row .k {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
     color: var(--fg-2);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    letter-spacing: 0;
+    font-weight: 500;
   }
   .kv-row .v {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
     font-size: 11px;
     color: var(--fg-0);
     word-break: break-all;
+    font-variant-numeric: tabular-nums;
   }
   .badges {
-    display: flex; flex-wrap: wrap; gap: 4px;
-    margin-top: 6px;
+    display: flex; flex-wrap: wrap; gap: 5px;
+    margin-top: 8px;
   }
   .badge {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 8px;
-    padding: 2px 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    padding: 3px 9px;
     border: 1px solid var(--line-strong);
     color: var(--fg-1);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+    letter-spacing: 0;
+    font-weight: 600;
+    border-radius: var(--r-pill);
   }
   .badge.privoro {
     border-color: var(--privoro);
     color: var(--privoro-bright);
-    background: rgba(0,119,139,0.06);
+    background: rgba(0,119,139,0.08);
   }
 
   /* CENTER COLUMN */
   .col-center {
     display: grid;
-    grid-template-rows: 56px 1fr;
-    gap: 8px;
+    grid-template-rows: 60px 1fr;
+    gap: 10px;
     min-height: 0;
   }
   .actions {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+    gap: 10px;
   }
   .action-btn {
     background: var(--bg-1);
     border: 1px solid var(--line-strong);
     color: var(--fg-0);
-    padding: 8px 12px;
+    padding: 10px 14px;
     cursor: pointer;
     text-align: left;
-    transition: all 0.15s;
-    font-family: 'Montserrat', sans-serif;
+    transition: all 0.2s cubic-bezier(0.2, 0, 0.2, 1);
+    font-family: 'Inter', sans-serif;
     position: relative;
     display: flex;
     align-items: center;
     gap: 12px;
     overflow: hidden;
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-1);
   }
   .action-btn:hover, .action-btn:focus-visible {
     border-color: var(--privoro);
     background: var(--bg-2);
     outline: none;
+    transform: translateY(-1px);
   }
+  .action-btn:active { transform: translateY(0); }
   .action-btn[data-active="true"] {
     border-color: var(--privoro);
-    background: linear-gradient(180deg, var(--bg-2), rgba(0,119,139,0.06));
-  }
-  .action-btn[data-active="true"]::before {
-    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
-    background: var(--privoro);
+    background: linear-gradient(180deg, var(--bg-2), rgba(0,119,139,0.08));
+    box-shadow: var(--shadow-2), 0 0 0 1px var(--privoro);
   }
   .action-btn .icon {
-    width: 24px; height: 24px;
+    width: 28px; height: 28px;
     display: grid; place-items: center;
     color: var(--privoro-bright);
     flex-shrink: 0;
+    background: rgba(0,119,139,0.1);
+    border-radius: var(--r-sm);
   }
-  .action-btn .icon svg { width: 100%; height: 100%; }
+  .action-btn .icon svg { width: 16px; height: 16px; }
   .action-btn .body { flex: 1; min-width: 0; }
   .action-btn .ttl {
     font-weight: 600;
-    font-size: 12px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: -0.01em;
     line-height: 1.1;
   }
   .action-btn .desc {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
     color: var(--fg-2);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    letter-spacing: 0;
     margin-top: 2px;
+    font-weight: 500;
   }
 
   /* STAGE */
   .stage {
     background: var(--bg-1);
     border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-1);
     display: flex; flex-direction: column;
     min-height: 0;
     position: relative;
+    overflow: hidden;
   }
   .stage-head {
-    padding: 7px 14px;
+    padding: 10px 16px;
     border-bottom: 1px solid var(--line);
     display: flex; justify-content: space-between; align-items: center;
     background: var(--bg-2);
     flex-shrink: 0;
   }
   .stage-head h2 {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-weight: 600;
-    font-size: 10px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--fg-1);
+    font-size: 12px;
+    letter-spacing: -0.01em;
+    color: var(--fg-0);
   }
   .stage-head .id {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    font-size: 10px;
     color: var(--fg-3);
-    letter-spacing: 0.1em;
+    letter-spacing: 0;
   }
   .stage-body {
-    padding: 10px 12px;
+    padding: 12px;
     flex: 1;
     overflow: hidden;
     min-height: 0;
     display: flex;
     flex-direction: column;
   }
-  .pane { display: none; flex-direction: column; gap: 8px; height: 100%; min-height: 0; }
+  .pane { display: none; flex-direction: column; gap: 10px; height: 100%; min-height: 0; }
   .pane[data-active="true"] { display: flex; }
 
   /* SPEED METRICS */
   .metrics-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 6px;
+    gap: 8px;
     flex-shrink: 0;
   }
   .metric {
     background: var(--bg-2);
     border: 1px solid var(--line);
-    padding: 8px 10px;
+    border-radius: var(--r-sm);
+    padding: 10px 12px;
     position: relative;
+    transition: all 0.3s cubic-bezier(0.2, 0, 0.2, 1);
   }
   .metric.active {
     border-color: var(--privoro);
-    background: linear-gradient(180deg, var(--bg-2), rgba(0,119,139,0.04));
+    background: linear-gradient(180deg, var(--bg-2), rgba(0,119,139,0.05));
   }
   .metric .lbl {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
     color: var(--fg-2);
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    margin-bottom: 3px;
+    letter-spacing: 0;
+    margin-bottom: 4px;
+    font-weight: 500;
   }
   .metric .val {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 18px;
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    font-size: 22px;
     font-weight: 500;
     color: var(--fg-0);
     line-height: 1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
   }
   .metric .val .u {
-    font-size: 9px;
+    font-size: 11px;
     color: var(--fg-2);
     margin-left: 3px;
-    letter-spacing: 0.06em;
+    font-weight: 400;
+    letter-spacing: 0;
   }
   .metric.active .val { color: var(--privoro-bright); }
 
@@ -532,35 +626,37 @@
   .chart-box {
     background: var(--bg-2);
     border: 1px solid var(--line);
-    padding: 8px 10px;
+    border-radius: var(--r-sm);
+    padding: 10px 12px;
     flex: 1;
     display: flex; flex-direction: column;
     min-height: 0;
   }
   .chart-head {
     display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
     flex-shrink: 0;
   }
   .chart-title {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
     color: var(--fg-2);
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
+    letter-spacing: 0;
+    font-weight: 500;
   }
   .chart-legend {
-    display: flex; gap: 12px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    display: flex; gap: 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0;
     color: var(--fg-2);
+    font-weight: 500;
   }
   .chart-legend .dot {
     display: inline-block;
-    width: 8px; height: 2px;
-    margin-right: 5px;
+    width: 9px; height: 2px;
+    border-radius: 1px;
+    margin-right: 6px;
     vertical-align: middle;
   }
   .chart-legend .dl-color { background: var(--privoro-bright); }
@@ -580,14 +676,14 @@
 
   /* PROGRESS */
   .progress-row {
-    display: flex; align-items: center; gap: 10px;
+    display: flex; align-items: center; gap: 12px;
     flex-shrink: 0;
   }
   .progress-track {
     flex: 1;
-    height: 4px;
+    height: 6px;
     background: var(--bg-3);
-    border: 1px solid var(--line);
+    border-radius: var(--r-pill);
     overflow: hidden;
   }
   .progress-fill {
@@ -595,15 +691,16 @@
     background: linear-gradient(90deg, var(--privoro-dim), var(--privoro-bright));
     width: 0%;
     transition: width 0.2s ease;
+    border-radius: var(--r-pill);
   }
   .progress-status {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    font-size: 11px;
     color: var(--fg-2);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    min-width: 130px;
+    letter-spacing: 0;
+    min-width: 140px;
     text-align: right;
+    font-variant-numeric: tabular-nums;
   }
   .progress-status.err { color: var(--err); }
 
@@ -618,17 +715,18 @@
     background: var(--privoro);
     color: #fff;
     border: 1px solid var(--privoro);
-    padding: 6px 14px;
-    font-family: 'Montserrat', sans-serif;
+    padding: 8px 18px;
+    font-family: 'Inter', sans-serif;
     font-weight: 600;
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: -0.005em;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: all 0.2s cubic-bezier(0.2, 0, 0.2, 1);
+    border-radius: var(--r-pill);
   }
-  .btn:hover { background: var(--privoro-bright); border-color: var(--privoro-bright); }
-  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn:hover { background: var(--privoro-bright); border-color: var(--privoro-bright); transform: scale(1.02); }
+  .btn:active { transform: scale(0.98); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   .btn.ghost {
     background: transparent;
     color: var(--privoro-bright);
@@ -636,7 +734,7 @@
   }
   .btn.ghost:hover {
     border-color: var(--privoro);
-    background: rgba(0,119,139,0.06);
+    background: rgba(0,119,139,0.08);
   }
   .btn.subtle {
     background: var(--bg-2);
@@ -648,10 +746,12 @@
     background: var(--bg-2);
     color: var(--fg-0);
     border: 1px solid var(--line-strong);
-    padding: 5px 10px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.04em;
+    padding: 7px 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0;
+    border-radius: var(--r-pill);
+    font-weight: 500;
   }
   select.control:focus, input.control:focus {
     outline: none;
@@ -661,91 +761,106 @@
   /* VIDEO PANE */
   .video-layout {
     display: grid;
-    grid-template-columns: 1fr 200px;
+    grid-template-columns: 1fr 220px;
     gap: 10px;
     flex: 1;
     min-height: 0;
   }
+  .video-col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 0;
+    min-width: 0;
+  }
   .video-frame {
     background: #000;
     border: 1px solid var(--line);
+    border-radius: var(--r-md);
     position: relative;
     overflow: hidden;
-    aspect-ratio: 16 / 9;
-    max-height: 100%;
-    align-self: start;
+    flex: 1;
+    min-height: 0;
   }
   .video-frame iframe { width: 100%; height: 100%; border: none; display: block; }
   .video-placeholder {
     position: absolute; inset: 0;
     display: flex; align-items: center; justify-content: center;
     color: var(--fg-2);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0;
     background: var(--bg-2);
     text-align: center;
     padding: 20px;
+    font-weight: 500;
   }
   .video-stats {
-    display: flex; flex-direction: column; gap: 3px;
+    display: flex; flex-direction: column; gap: 4px;
     overflow: auto;
   }
   .stat-row {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 5px 8px;
+    padding: 7px 12px;
     background: var(--bg-2);
     border: 1px solid var(--line);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
+    border-radius: var(--r-sm);
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
   }
-  .stat-row .k { color: var(--fg-2); letter-spacing: 0.1em; text-transform: uppercase; font-size: 8px; }
-  .stat-row .v { color: var(--fg-0); }
-  .video-bottom {
-    display: flex; flex-direction: column; gap: 6px;
-    flex-shrink: 0;
+  .stat-row .k {
+    color: var(--fg-2);
+    letter-spacing: 0;
+    font-size: 10px;
+    font-weight: 500;
+  }
+  .stat-row .v {
+    color: var(--fg-0);
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    font-variant-numeric: tabular-nums;
   }
 
   /* RIGHT COLUMN */
   .col-right {
     display: grid;
     grid-template-rows: 1fr;
-    gap: 8px;
+    gap: 10px;
     min-height: 0;
   }
-  .conn-rows .kv-row { grid-template-columns: 80px 1fr; }
+  .conn-rows .kv-row { grid-template-columns: 86px 1fr; }
   .conn-rows .kv-row .v { text-align: right; }
 
   /* MAP */
   .map-section {
     background: var(--bg-1);
     border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-1);
     display: flex; flex-direction: column;
     min-height: 0;
+    overflow: hidden;
   }
   .map-head {
-    padding: 7px 14px;
+    padding: 10px 16px;
     border-bottom: 1px solid var(--line);
     background: var(--bg-2);
     display: flex; justify-content: space-between; align-items: center;
     flex-shrink: 0;
   }
   .map-head h2 {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-weight: 600;
-    font-size: 10px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--fg-1);
+    font-size: 12px;
+    letter-spacing: -0.01em;
+    color: var(--fg-0);
   }
   .map-legend {
-    display: flex; gap: 16px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+    display: flex; gap: 18px;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0;
     color: var(--fg-2);
+    font-weight: 500;
   }
   .map-legend .item { display: flex; align-items: center; gap: 6px; }
   .map-legend .swatch {
@@ -796,12 +911,13 @@
     background: var(--bg-2) !important;
     color: var(--fg-0) !important;
     border: 1px solid var(--line-strong) !important;
-    font-family: 'JetBrains Mono', monospace !important;
-    font-size: 9px !important;
-    letter-spacing: 0.1em !important;
-    text-transform: uppercase !important;
-    padding: 5px 8px !important;
-    box-shadow: none !important;
+    border-radius: var(--r-sm) !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 10px !important;
+    letter-spacing: 0 !important;
+    padding: 5px 10px !important;
+    box-shadow: var(--shadow-2) !important;
+    font-weight: 500 !important;
   }
   .leaflet-tooltip-top:before, .leaflet-tooltip-bottom:before,
   .leaflet-tooltip-left:before, .leaflet-tooltip-right:before { display: none !important; }
@@ -809,8 +925,9 @@
   /* SETTINGS MODAL */
   .modal-bg {
     position: fixed; inset: 0;
-    background: rgba(7,9,11,0.85);
-    backdrop-filter: blur(6px);
+    background: rgba(7,9,11,0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     display: none;
     align-items: center; justify-content: center;
     z-index: 9999;
@@ -819,34 +936,33 @@
   .modal {
     background: var(--bg-1);
     border: 1px solid var(--line-strong);
-    border-top: 2px solid var(--privoro);
+    border-radius: var(--r-lg);
     width: min(560px, 90vw);
     max-height: 85vh;
     overflow: auto;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.05);
   }
   .modal-head {
-    padding: 14px 18px;
+    padding: 16px 20px;
     border-bottom: 1px solid var(--line);
     display: flex; justify-content: space-between; align-items: center;
     background: var(--bg-2);
   }
   .modal-head h3 {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-weight: 600;
-    font-size: 13px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    font-size: 15px;
+    letter-spacing: -0.015em;
     color: var(--fg-0);
   }
-  .modal-body { padding: 18px; }
+  .modal-body { padding: 20px; }
   .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
   .field label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
     color: var(--fg-2);
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
+    letter-spacing: 0;
+    font-weight: 500;
   }
   .field .help {
     font-size: 11px;
@@ -857,18 +973,20 @@
     background: var(--bg-2);
     color: var(--fg-0);
     border: 1px solid var(--line-strong);
-    padding: 10px 12px;
-    font-family: 'JetBrains Mono', monospace;
+    padding: 11px 14px;
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
     font-size: 12px;
-    letter-spacing: 0.02em;
+    letter-spacing: 0;
     width: 100%;
+    border-radius: var(--r-sm);
   }
   .field input:focus {
     outline: none;
     border-color: var(--privoro);
+    box-shadow: 0 0 0 3px rgba(0,119,139,0.2);
   }
   .modal-foot {
-    padding: 14px 18px;
+    padding: 14px 20px;
     border-top: 1px solid var(--line);
     display: flex; justify-content: flex-end; gap: 8px;
     background: var(--bg-2);
@@ -883,11 +1001,13 @@
     border: 1px solid var(--warn);
     color: var(--warn);
     padding: 12px 18px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.06em;
+    border-radius: var(--r-sm);
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0;
     z-index: 100;
     max-width: 720px;
+    box-shadow: var(--shadow-2);
   }
   body[data-fileproto="true"] .file-warning { display: block; }
 
@@ -898,8 +1018,8 @@
   ::-webkit-scrollbar-thumb:hover { background: var(--line-strong); }
 
   @media (max-height: 850px) {
-    .app { grid-template-rows: 44px 70px 1fr 240px; }
-    .state-text { font-size: 24px; }
+    .app { grid-template-rows: 48px 80px 1fr 240px; }
+    .vpn-flow-state { font-size: 18px; }
     .hero-rtt-val { font-size: 18px; }
   }
   @media (max-width: 1100px) {
@@ -951,19 +1071,71 @@
   </div>
 </header>
 
-<!-- HERO -->
+<!-- HERO with VPN flow -->
 <section class="hero" id="hero" data-state="online">
-  <div class="hero-status">
-    <div class="hero-eyebrow">Network Path Integrity</div>
-    <div class="hero-state">
-      <div class="state-light"></div>
-      <div class="state-text" id="state-text">Connected</div>
+  <div class="vpn-flow">
+    <div class="vpn-flow-status">
+      <div class="vpn-flow-eyebrow">Network Status</div>
+      <div class="vpn-flow-state" id="state-text">Connected</div>
+      <div class="vpn-flow-sub" id="state-sub">both tunnels established</div>
     </div>
-    <div class="hero-statesub" id="state-sub">internet reachable / both tunnels established</div>
+
+    <div class="vpn-diagram">
+      <svg viewBox="0 0 700 68" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+        <!-- Connection lines (drawn first so they sit behind nodes) -->
+        <line id="link-1" class="vpn-link" x1="60" y1="34" x2="200" y2="34"/>
+        <line id="link-2" class="vpn-link" x1="260" y1="34" x2="400" y2="34"/>
+        <line id="link-3" class="vpn-link" x1="460" y1="34" x2="600" y2="34"/>
+
+        <!-- Lock badges over the tunnel segments (only visible when active) -->
+        <g class="lock-icon" id="lock-1" transform="translate(122, 24)">
+          <circle cx="8" cy="10" r="9" fill="#161a1f" stroke="#34c47b" stroke-width="1.2"/>
+          <rect x="4.5" y="9" width="7" height="6" rx="0.6" fill="none" stroke="#34c47b" stroke-width="1.1"/>
+          <path d="M 6 9 v -1.5 a 2 2 0 0 1 4 0 v 1.5" fill="none" stroke="#34c47b" stroke-width="1.1" stroke-linecap="round"/>
+        </g>
+        <g class="lock-icon" id="lock-2" transform="translate(322, 24)">
+          <circle cx="8" cy="10" r="9" fill="#161a1f" stroke="#34c47b" stroke-width="1.2"/>
+          <rect x="4.5" y="9" width="7" height="6" rx="0.6" fill="none" stroke="#34c47b" stroke-width="1.1"/>
+          <path d="M 6 9 v -1.5 a 2 2 0 0 1 4 0 v 1.5" fill="none" stroke="#34c47b" stroke-width="1.1" stroke-linecap="round"/>
+        </g>
+
+        <!-- Endpoint: Device (iPad) -->
+        <g id="node-device">
+          <rect class="vpn-node endpoint" x="14" y="14" width="40" height="40" rx="10"/>
+          <!-- iPad icon -->
+          <rect class="vpn-icon endpoint-active" x="22" y="22" width="24" height="20" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.4"/>
+          <circle class="vpn-icon endpoint-active" cx="34" cy="38" r="0.8"/>
+          <text class="vpn-label endpoint-active" x="34" y="64">iPad</text>
+        </g>
+
+        <!-- Inner VPN node (now in position 2: closer to device) -->
+        <g id="node-inner">
+          <rect class="vpn-node" id="node-inner-rect" x="200" y="14" width="60" height="40" rx="10"/>
+          <path class="vpn-icon" id="node-inner-icon" d="M 230 22 l -7 3 v 6 c 0 4 3 8 7 9 c 4 -1 7 -5 7 -9 v -6 z M 226 31 l 3 3 l 5 -6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+          <text class="vpn-label" id="node-inner-label" x="230" y="64">Inner VPN</text>
+        </g>
+
+        <!-- Outer VPN node, branded as Privoro SHDW (now in position 3: transport layer) -->
+        <g id="node-outer">
+          <rect class="vpn-node" id="node-outer-rect" x="400" y="14" width="60" height="40" rx="10"/>
+          <path class="vpn-icon" id="node-outer-icon" d="M 430 22 l -7 3 v 6 c 0 4 3 8 7 9 c 4 -1 7 -5 7 -9 v -6 z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+          <text class="vpn-label" id="node-outer-label" x="430" y="64">Privoro SHDW</text>
+        </g>
+
+        <!-- Internet endpoint -->
+        <g id="node-internet">
+          <rect class="vpn-node endpoint" x="600" y="14" width="60" height="40" rx="10"/>
+          <circle class="vpn-icon endpoint-active" cx="630" cy="34" r="9" fill="none" stroke="currentColor" stroke-width="1.4"/>
+          <ellipse class="vpn-icon endpoint-active" cx="630" cy="34" rx="4" ry="9" fill="none" stroke="currentColor" stroke-width="1.4"/>
+          <line class="vpn-icon endpoint-active" x1="621" y1="34" x2="639" y2="34" stroke="currentColor" stroke-width="1.4"/>
+          <text class="vpn-label endpoint-active" x="630" y="64">Internet</text>
+        </g>
+      </svg>
+    </div>
   </div>
   <div class="hero-rtt">
     <div class="hero-rtt-head">
-      <span class="hero-eyebrow">Live RTT</span>
+      <span class="hero-rtt-label">Live RTT</span>
       <span class="hero-rtt-val mono" id="rtt-now">--<span class="u">ms</span></span>
     </div>
     <canvas id="rtt-canvas"></canvas>
@@ -1124,7 +1296,7 @@
         <!-- VIDEO PANE -->
         <div class="pane" data-pane="video">
           <div class="video-layout">
-            <div style="display:flex;flex-direction:column;gap:8px;min-height:0;">
+            <div class="video-col">
               <div class="video-frame" id="video-frame">
                 <div class="video-placeholder" id="video-placeholder">click load player to begin</div>
                 <div id="yt-player" style="width:100%;height:100%;"></div>
@@ -1138,6 +1310,7 @@
             <div class="video-stats">
               <div class="stat-row"><span class="k">State</span><span class="v" id="vid-state">idle</span></div>
               <div class="stat-row"><span class="k">Quality</span><span class="v" id="vid-q">--</span></div>
+              <div class="stat-row"><span class="k">Bitrate</span><span class="v" id="vid-rate">-- Mbps</span></div>
               <div class="stat-row"><span class="k">Buffered</span><span class="v" id="vid-buf">0%</span></div>
               <div class="stat-row"><span class="k">Stalls</span><span class="v" id="vid-stalls">0</span></div>
               <div class="stat-row"><span class="k">Elapsed</span><span class="v" id="vid-time">0s</span></div>
@@ -1364,17 +1537,75 @@ tick();
 setInterval(tick, 1000);
 
 /* ===========================================================
-   HERO STATE
+   HERO STATE + VPN FLOW VISUALIZATION
 =========================================================== */
 const heroEl = document.getElementById("hero");
 const stateText = document.getElementById("state-text");
 const stateSub = document.getElementById("state-sub");
 
+/* Track per-tunnel state. We treat both tunnels as "up" while internet is
+   reachable (we cannot actually probe each gateway from a static page),
+   and mark them down when the device goes offline. */
+const TUNNEL = { outer: false, inner: false };
+
+function paintTunnel() {
+  const outerActive = TUNNEL.outer;
+  const innerActive = TUNNEL.inner;
+  const link1 = document.getElementById("link-1");
+  const link2 = document.getElementById("link-2");
+  const link3 = document.getElementById("link-3");
+  const lock1 = document.getElementById("lock-1");
+  const lock2 = document.getElementById("lock-2");
+  const outerRect = document.getElementById("node-outer-rect");
+  const outerIcon = document.getElementById("node-outer-icon");
+  const outerLabel = document.getElementById("node-outer-label");
+  const innerRect = document.getElementById("node-inner-rect");
+  const innerIcon = document.getElementById("node-inner-icon");
+  const innerLabel = document.getElementById("node-inner-label");
+
+  // Visual order: iPad -> Inner VPN -> Privoro SHDW (Outer) -> Internet
+  // Link 1 (Device -> Inner): active when inner tunnel is up
+  link1.classList.toggle("active", innerActive);
+  innerRect.classList.toggle("tunnel-active", innerActive);
+  innerIcon.classList.toggle("tunnel-active", innerActive);
+  innerLabel.classList.toggle("active", innerActive);
+  lock1.classList.toggle("active", innerActive);
+
+  // Link 2 (Inner -> Outer/SHDW): active when outer wraps the inner tunnel
+  const fullPath = innerActive && outerActive;
+  link2.classList.toggle("active", fullPath);
+  outerRect.classList.toggle("tunnel-active", fullPath);
+  outerIcon.classList.toggle("tunnel-active", fullPath);
+  outerLabel.classList.toggle("active", fullPath);
+  lock2.classList.toggle("active", fullPath);
+
+  // Link 3 (Outer -> Internet): the cleartext transport leg, active when full path established
+  link3.classList.toggle("active", fullPath);
+}
+
 function setHero(state, label, sub) {
   heroEl.dataset.state = state;
   stateText.textContent = label;
   stateSub.textContent = sub;
+  if (state === "online") {
+    TUNNEL.outer = true;
+    TUNNEL.inner = true;
+    document.getElementById("tA-state").classList.remove("err");
+    document.getElementById("tA-state").classList.add("ok");
+    document.getElementById("tB-state").classList.remove("err");
+    document.getElementById("tB-state").classList.add("ok");
+  } else if (state === "offline") {
+    TUNNEL.outer = false;
+    TUNNEL.inner = false;
+  } else if (state === "degraded") {
+    // Treat as outer up, inner unverified (still draw both since we cannot
+    // independently probe; real product would have liveness checks here).
+    TUNNEL.outer = true;
+    TUNNEL.inner = true;
+  }
+  paintTunnel();
 }
+paintTunnel();
 
 /* ===========================================================
    CONNECTION TYPE
@@ -1540,26 +1771,38 @@ function drawRtt() {
   const max = Math.max(120, ...rttHistory);
   const step = w / (RTT_MAX - 1);
 
+  const pts = rttHistory.map((v, i) => ({
+    x: i * step,
+    y: h - (v / max) * (h - 4) - 2,
+  }));
+
+  // smooth path helper
+  const trace = () => {
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 0; i < pts.length - 1; i++) {
+      const xc = (pts[i].x + pts[i + 1].x) / 2;
+      const yc = (pts[i].y + pts[i + 1].y) / 2;
+      ctx.quadraticCurveTo(pts[i].x, pts[i].y, xc, yc);
+    }
+    const last = pts[pts.length - 1];
+    const prev = pts[pts.length - 2];
+    ctx.quadraticCurveTo(prev.x, prev.y, last.x, last.y);
+  };
+
   ctx.beginPath();
-  rttHistory.forEach((v,i) => {
-    const x = i * step;
-    const y = h - (v / max) * (h - 4) - 2;
-    if (i === 0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-  });
-  ctx.lineTo((rttHistory.length-1) * step, h);
+  trace();
+  ctx.lineTo(pts[pts.length - 1].x, h);
   ctx.lineTo(0, h);
   ctx.closePath();
-  ctx.fillStyle = "rgba(0,163,191,0.15)";
+  ctx.fillStyle = "rgba(0,179,209,0.18)";
   ctx.fill();
 
   ctx.beginPath();
-  rttHistory.forEach((v,i) => {
-    const x = i * step;
-    const y = h - (v / max) * (h - 4) - 2;
-    if (i === 0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-  });
-  ctx.strokeStyle = "#00a3bf";
-  ctx.lineWidth = 1.4;
+  trace();
+  ctx.strokeStyle = "#00b3d1";
+  ctx.lineWidth = 1.6;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
   ctx.stroke();
 }
 
@@ -1611,7 +1854,7 @@ function drawLineChart(canvas, series, opts = {}) {
   if (!w || !h) return;
   ctx.clearRect(0,0,w,h);
 
-  ctx.strokeStyle = "rgba(255,255,255,0.05)";
+  ctx.strokeStyle = "rgba(255,255,255,0.04)";
   ctx.lineWidth = 1;
   for (let i = 1; i < 5; i++) {
     const y = (h / 5) * i;
@@ -1622,8 +1865,8 @@ function drawLineChart(canvas, series, opts = {}) {
   series.forEach(s => s.data.forEach(p => { if (p > max) max = p; }));
   max = max * 1.15;
 
-  ctx.fillStyle = "rgba(255,255,255,0.25)";
-  ctx.font = "9px 'JetBrains Mono', monospace";
+  ctx.fillStyle = "rgba(255,255,255,0.22)";
+  ctx.font = "10px 'Inter', sans-serif";
   ctx.textAlign = "right";
   for (let i = 0; i <= 4; i++) {
     const v = max * (1 - i / 4);
@@ -1632,45 +1875,83 @@ function drawLineChart(canvas, series, opts = {}) {
   }
   if (opts.unit) {
     ctx.textAlign = "left";
-    ctx.fillStyle = "rgba(255,255,255,0.3)";
+    ctx.fillStyle = "rgba(255,255,255,0.28)";
     ctx.fillText(opts.unit, 4, 12);
+  }
+
+  // Helper: draws a smooth curve through a list of points using
+  // Catmull-Rom-style midpoint smoothing (works well with 1+ points).
+  function tracePath(pts, ctx) {
+    if (pts.length === 0) return;
+    if (pts.length === 1) {
+      ctx.moveTo(pts[0].x, pts[0].y);
+      return;
+    }
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 0; i < pts.length - 1; i++) {
+      const xc = (pts[i].x + pts[i + 1].x) / 2;
+      const yc = (pts[i].y + pts[i + 1].y) / 2;
+      ctx.quadraticCurveTo(pts[i].x, pts[i].y, xc, yc);
+    }
+    // last segment
+    const last = pts[pts.length - 1];
+    const prev = pts[pts.length - 2];
+    ctx.quadraticCurveTo(prev.x, prev.y, last.x, last.y);
   }
 
   series.forEach(s => {
     if (s.data.length < 1) return;
     const step = s.data.length > 1 ? w / Math.max(s.data.length - 1, 1) : w;
+    const pts = s.data.map((v, i) => ({
+      x: i * step,
+      y: h - (v / max) * (h - 8) - 4,
+    }));
 
     if (s.fill) {
       ctx.beginPath();
-      s.data.forEach((v,i) => {
-        const x = i * step;
-        const y = h - (v / max) * (h - 8) - 4;
-        if (i === 0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-      });
-      ctx.lineTo((s.data.length-1) * step, h);
-      ctx.lineTo(0, h);
+      tracePath(pts, ctx);
+      ctx.lineTo(pts[pts.length - 1].x, h);
+      ctx.lineTo(pts[0].x, h);
       ctx.closePath();
       ctx.fillStyle = s.fill;
       ctx.fill();
     }
     ctx.beginPath();
-    s.data.forEach((v,i) => {
-      const x = i * step;
-      const y = h - (v / max) * (h - 8) - 4;
-      if (i === 0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-    });
+    tracePath(pts, ctx);
     ctx.strokeStyle = s.stroke;
     ctx.lineWidth = s.width || 1.6;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
     ctx.stroke();
-    if (s.data.length) {
-      const x = (s.data.length - 1) * step;
-      const y = h - (s.data[s.data.length-1] / max) * (h - 8) - 4;
+
+    // last point dot
+    if (pts.length) {
+      const last = pts[pts.length - 1];
       ctx.beginPath();
-      ctx.arc(x, y, 3, 0, Math.PI * 2);
+      ctx.arc(last.x, last.y, 3, 0, Math.PI * 2);
       ctx.fillStyle = s.stroke;
       ctx.fill();
     }
   });
+}
+
+/* ===========================================================
+   ROLLING AVERAGE (for smooth chart lines)
+=========================================================== */
+function rollingAverage(arr, windowSize = 5) {
+  if (arr.length === 0) return [];
+  const out = new Array(arr.length);
+  for (let i = 0; i < arr.length; i++) {
+    const start = Math.max(0, i - windowSize + 1);
+    let sum = 0;
+    let count = 0;
+    for (let j = start; j <= i; j++) {
+      sum += arr[j];
+      count++;
+    }
+    out[i] = sum / count;
+  }
+  return out;
 }
 
 /* ===========================================================
@@ -1680,8 +1961,8 @@ const speedChart = document.getElementById("speed-chart");
 let speedSeries = { dl: [], ul: [] };
 function drawSpeedChart() {
   drawLineChart(speedChart, [
-    { data: speedSeries.dl, stroke: "#00a3bf", fill: "rgba(0,163,191,0.12)", width: 1.8 },
-    { data: speedSeries.ul, stroke: "#b0b4b8", fill: "rgba(176,180,184,0.08)", width: 1.4 },
+    { data: rollingAverage(speedSeries.dl, 5), stroke: "#00b3d1", fill: "rgba(0,179,209,0.14)", width: 2.0 },
+    { data: rollingAverage(speedSeries.ul, 5), stroke: "#b0b4b8", fill: "rgba(176,180,184,0.08)", width: 1.6 },
   ], { unit: "Mbps", minMax: 50 });
 }
 
@@ -1801,11 +2082,11 @@ sp.run.addEventListener("click", async () => {
 
     sp.status.textContent = "measuring download...";
     sp.prog.style.width = "40%";
-    await measureDownload(50 * 1024 * 1024, speedAbort.signal);
+    await measureDownload(300 * 1024 * 1024, speedAbort.signal);
 
     sp.status.textContent = "measuring upload...";
     sp.prog.style.width = "75%";
-    await measureUpload(15 * 1024 * 1024, speedAbort.signal);
+    await measureUpload(100 * 1024 * 1024, speedAbort.signal);
 
     sp.prog.style.width = "100%";
     sp.status.textContent = "complete";
@@ -1840,6 +2121,9 @@ let ytStallCount = 0;
 let ytStartTime = null;
 let ytStatsInt = null;
 let ytAPILoading = null;
+let ytLastBytes = 0;
+let ytLastBytesTime = 0;
+let ytQualityForced = false;
 
 function loadYTAPI() {
   if (window.YT && window.YT.Player) return Promise.resolve();
@@ -1853,7 +2137,22 @@ function loadYTAPI() {
   return ytAPILoading;
 }
 
-/* YouTube error code reference. 100/101/150 are by far the most common. */
+/* Aggressive 720p forcing. YouTube's iframe API exposes setPlaybackQuality
+   but the player will silently revert to "auto" based on bandwidth heuristics.
+   We re-apply the quality on every state change and on a timer for the first
+   several seconds of playback. */
+function force720p() {
+  if (!ytPlayer) return;
+  try {
+    if (ytPlayer.setPlaybackQualityRange) {
+      ytPlayer.setPlaybackQualityRange("hd720", "hd720");
+    }
+    if (ytPlayer.setPlaybackQuality) {
+      ytPlayer.setPlaybackQuality("hd720");
+    }
+  } catch(e) {}
+}
+
 const YT_ERRORS = {
   2:   "invalid video id",
   5:   "html5 player error",
@@ -1890,13 +2189,16 @@ async function initYTPlayer() {
   if (ytPlayer) { try { ytPlayer.destroy(); } catch(e){} ytPlayer = null; }
   ytStallCount = 0;
   ytStartTime = null;
+  ytLastBytes = 0;
+  ytLastBytesTime = 0;
+  ytQualityForced = false;
   document.getElementById("vid-stalls").textContent = "0";
   document.getElementById("vid-time").textContent = "0s";
   document.getElementById("vid-buf").textContent = "0%";
   document.getElementById("vid-q").textContent = "--";
   document.getElementById("vid-bytes").textContent = "0 MB";
+  document.getElementById("vid-rate").textContent = "-- Mbps";
 
-  // Re-create the player target if it has been replaced by an iframe
   const frame = document.getElementById("video-frame");
   if (!document.getElementById("yt-player")) {
     const host = document.createElement("div");
@@ -1908,23 +2210,38 @@ async function initYTPlayer() {
   try {
     ytPlayer = new YT.Player("yt-player", {
       videoId: STATE.youtubeVideoId,
-      playerVars: { autoplay: 1, modestbranding: 1, rel: 0, playsinline: 1 },
+      playerVars: {
+        autoplay: 1,
+        modestbranding: 1,
+        rel: 0,
+        playsinline: 1,
+        vq: "hd720",     // hint to start at 720p
+        hd: 1,
+      },
       events: {
         onReady: (ev) => {
-          // Once the iframe has rendered, the placeholder is hidden behind it.
-          // We hide it explicitly so any leftover error text does not bleed through.
           const ph2 = document.getElementById("video-placeholder");
           if (ph2) ph2.style.display = "none";
-          try { ev.target.setPlaybackQuality("hd720"); } catch(e){}
+          force720p();
           try { ev.target.playVideo(); } catch(e){}
           ytStartTime = Date.now();
+          ytLastBytesTime = Date.now();
           document.getElementById("vid-state").textContent = "ready";
           if (ytStatsInt) clearInterval(ytStatsInt);
           ytStatsInt = setInterval(updateYTStats, 1000);
+          // Re-apply 720p on a short interval for the first 8 seconds since
+          // YouTube may downgrade for ABR.
+          let attempts = 0;
+          const forceInt = setInterval(() => {
+            force720p();
+            attempts++;
+            if (attempts > 8) clearInterval(forceInt);
+          }, 1000);
         },
         onStateChange: (ev) => {
           const states = {"-1":"unstarted",0:"ended",1:"playing",2:"paused",3:"buffering",5:"cued"};
           document.getElementById("vid-state").textContent = states[ev.data] || "unknown";
+          if (ev.data === 1) force720p(); // re-assert on play
           if (ev.data === 3) {
             ytStallCount++;
             document.getElementById("vid-stalls").textContent = ytStallCount;
@@ -1932,6 +2249,10 @@ async function initYTPlayer() {
         },
         onPlaybackQualityChange: (ev) => {
           document.getElementById("vid-q").textContent = ev.data;
+          // If YouTube downgraded us, push back up to 720
+          if (ev.data !== "hd720" && ev.data !== "hd1080" && ev.data !== "highres") {
+            setTimeout(force720p, 200);
+          }
         },
         onError: (ev) => {
           const code = ev.data;
@@ -1957,12 +2278,30 @@ function updateYTStats() {
     }
     const q = ytPlayer.getPlaybackQuality && ytPlayer.getPlaybackQuality();
     if (q) document.getElementById("vid-q").textContent = q;
+
     if (ytPlayer.getVideoBytesLoaded && ytPlayer.getVideoBytesTotal) {
-      const bl = ytPlayer.getVideoBytesLoaded();
-      const bt = ytPlayer.getVideoBytesTotal();
-      if (bt > 0) {
-        const mb = (bl * bt / 1e6).toFixed(1);
+      const fraction = ytPlayer.getVideoBytesLoaded();
+      const total = ytPlayer.getVideoBytesTotal();
+      if (total > 0) {
+        const loadedBytes = fraction * total;
+        const mb = (loadedBytes / 1e6).toFixed(1);
         document.getElementById("vid-bytes").textContent = mb + " MB";
+
+        // Compute instantaneous bitrate based on bytes delta over time delta
+        const now = Date.now();
+        if (ytLastBytesTime && now > ytLastBytesTime) {
+          const deltaBytes = loadedBytes - ytLastBytes;
+          const deltaSec = (now - ytLastBytesTime) / 1000;
+          if (deltaSec > 0 && deltaBytes >= 0) {
+            const mbps = (deltaBytes * 8 / 1e6) / deltaSec;
+            // Only update display when there is meaningful download activity
+            if (mbps >= 0) {
+              document.getElementById("vid-rate").textContent = mbps.toFixed(2) + " Mbps";
+            }
+          }
+        }
+        ytLastBytes = loadedBytes;
+        ytLastBytesTime = now;
       }
     }
   } catch(e) {}
@@ -2003,7 +2342,7 @@ const dlChart = document.getElementById("dl-chart");
 let dlSeries = [];
 function drawDlChart() {
   drawLineChart(dlChart, [
-    { data: dlSeries, stroke: "#00a3bf", fill: "rgba(0,163,191,0.12)", width: 1.8 },
+    { data: rollingAverage(dlSeries, 5), stroke: "#00b3d1", fill: "rgba(0,179,209,0.14)", width: 2.0 },
   ], { unit: "MB/s", minMax: 5 });
 }
 
@@ -2129,7 +2468,7 @@ function plotEgress(lat, lng, ip, city, country) {
     [CONFIG.device.lat, CONFIG.device.lng],
     [lat, lng]
   ], {
-    color: "#00a3bf",
+    color: "#00b3d1",
     weight: 1.5,
     opacity: 0.7,
     dashArray: "4 6"
