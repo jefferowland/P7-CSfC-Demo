@@ -3,1030 +3,311 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Privoro CSfC Demo Dashboard</title>
+<title>SHDW · CSfC Demo Dashboard · Privoro</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@200;300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
   integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 
 <style>
   :root {
-    --bg-0: #0a0d10;
-    --bg-1: #161a1f;
-    --bg-2: #1d2229;
-    --bg-3: #262c34;
-    --bg-4: #2e353e;
-    --line: rgba(255,255,255,0.07);
-    --line-strong: rgba(255,255,255,0.13);
-    --line-accent: rgba(0,119,139,0.35);
-    --fg-0: #f5f6f8;
-    --fg-1: #b9c0c8;
-    --fg-2: #7d858f;
-    --fg-3: #4a5159;
-    --fg-4: #2e353c;
-    --privoro: #00778B;
-    --privoro-bright: #00b3d1;
-    --privoro-dim: #004f5e;
-    --privoro-deep: #00323d;
-    --silver: #b0b4b8;
-    --ok: #34c47b;
-    --ok-bright: #4dd58c;
-    --ok-dim: #1f5d3a;
-    --warn: #f0b340;
-    --warn-dim: #5a4218;
-    --err: #ff5e4f;
-    --err-dim: #5a2419;
+    --bg: #ffffff;
+    --soft: #fafafa;
+    --rule: #e5e5e5;
+    --rule-soft: #efefef;
+    --ink: #1a1a1a;
+    --ink-2: #424242;
+    --ink-3: #6e6e6e;
+    --ink-4: #9a9a9a;
 
-    /* Apple-style radii */
-    --r-xs: 6px;
-    --r-sm: 10px;
-    --r-md: 14px;
-    --r-lg: 18px;
-    --r-xl: 24px;
-    --r-pill: 999px;
+    --orange: #EB6A1F;
+    --orange-soft: #fdf0e7;
+    --green: #4FB14E;
+    --green-soft: #ecf6ec;
+    --amber: #E89D2D;
+    --red: #D9303E;
+    --red-soft: #fbebed;
+    --blue: #4178B5;
+    --blue-soft: #edf2f8;
 
-    /* Shadows */
-    --shadow-1: 0 1px 2px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.04);
-    --shadow-2: 0 4px 16px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05);
-    --shadow-glow-ok: 0 0 24px rgba(52,196,123,0.35);
-    --shadow-glow-pv: 0 0 24px rgba(0,179,209,0.35);
+    --tw: 0.14em;
+    --tm: 0.06em;
+
+    --f-d: 'Source Sans 3', system-ui, sans-serif;
+    --f-m: 'JetBrains Mono', ui-monospace, monospace;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
   body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
-    background: var(--bg-0);
-    color: var(--fg-0);
-    font-size: 13px;
-    line-height: 1.45;
-    letter-spacing: -0.005em;
+    background: var(--bg); color: var(--ink-2);
+    font-family: var(--f-d); font-weight: 400; font-size: 12.5px; line-height: 1.45;
     overflow: hidden;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: geometricPrecision;
-    font-feature-settings: "ss01", "cv11";
   }
-
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    pointer-events: none;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='52' viewBox='0 0 60 52'><path d='M30 1 L58 17 L58 35 L30 51 L2 35 L2 17 Z' fill='none' stroke='%2300778B' stroke-width='0.5' opacity='0.06'/></svg>");
-    background-position: center;
-    z-index: 0;
-  }
-  body::after {
-    content: '';
-    position: fixed; inset: 0;
-    pointer-events: none;
-    background: radial-gradient(ellipse at top right, rgba(0,119,139,0.06), transparent 50%);
-    z-index: 0;
-  }
-
-  .mono { font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace; font-feature-settings: "tnum" 1, "calt" 0; letter-spacing: 0; }
+  .mono { font-family: var(--f-m); font-variant-numeric: tabular-nums; }
 
   .app {
-    position: relative;
-    z-index: 1;
-    height: 100vh;
+    height: 100dvh;
     display: grid;
-    grid-template-rows: 52px 100px 1fr 280px;
-    gap: 10px;
-    padding: 10px;
+    grid-template-rows: auto auto 1fr auto;
+    gap: 12px;
+    padding: 0 22px 14px;
+    min-height: 0;
   }
 
-  /* HEADER */
-  header {
+  /* ---------------- TOPBAR ---------------- */
+  .topbar { border-bottom: 1px solid var(--rule); display: flex; align-items: center; justify-content: space-between; padding: 10px 0; }
+  .brand { display: flex; align-items: center; gap: 13px; }
+  .hound { height: 30px; width: auto; display: block; }
+  .wordmark { font-weight: 300; font-size: 17px; letter-spacing: 0.2em; color: var(--ink-3); }
+  .wordmark .reg { font-size: 9px; vertical-align: super; color: var(--ink-4); }
+  .brand-divider { width: 1px; height: 22px; background: var(--rule); }
+  .brand-prod { font-size: 11px; color: var(--ink-3); letter-spacing: var(--tm); text-transform: uppercase; font-weight: 500; }
+
+  .topbar-meta { display: flex; align-items: center; gap: 28px; }
+  .topbar-meta .item { display: flex; flex-direction: column; gap: 1px; align-items: flex-end; }
+  .topbar-meta .label { font-size: 9px; color: var(--ink-4); letter-spacing: var(--tw); text-transform: uppercase; font-weight: 600; }
+  .topbar-meta .value { font-size: 12px; color: var(--ink-2); font-weight: 500; }
+  .badge { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; letter-spacing: var(--tw); text-transform: uppercase; font-weight: 700; color: var(--green); background: var(--green-soft); padding: 5px 11px; }
+  .badge .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .badge.down { color: var(--red); background: var(--red-soft); }
+  .icon-btn { background: none; border: 1px solid var(--rule); width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: var(--ink-3); transition: color 120ms, border-color 120ms; }
+  .icon-btn:hover { color: var(--ink); border-color: var(--ink-4); }
+  .icon-btn svg { width: 15px; height: 15px; }
+
+  /* ---------------- HERO STRIP ---------------- */
+  .hero-strip {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: 210px 1fr 225px;
+    gap: 28px;
     align-items: center;
-    gap: 24px;
-    padding: 0 20px;
-    background: var(--bg-1);
-    border: 1px solid var(--line);
-    border-radius: var(--r-lg);
-    box-shadow: var(--shadow-1);
-    position: relative;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 10px;
+    min-height: 0;
   }
-  .brand {
-    display: flex; align-items: center; gap: 18px;
-  }
-  .brand-logo {
-    height: 32px;
-    color: var(--silver);
-    display: flex; align-items: center;
-  }
-  .brand-logo svg {
-    height: 100%;
-    width: auto;
-    display: block;
-  }
-  .brand-divider {
-    width: 1px; height: 28px;
-    background: var(--line-strong);
-  }
-  .brand-context { display: flex; flex-direction: column; }
-  .brand-title {
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 14px;
-    letter-spacing: -0.015em;
-    color: var(--fg-0);
-  }
-  .brand-sub {
-    font-family: 'Inter', sans-serif;
-    font-weight: 500;
-    font-size: 11px;
-    color: var(--fg-2);
-    letter-spacing: 0.02em;
-    margin-top: 1px;
+  .hero-status .eyebrow { font-size: 9.5px; color: var(--ink-3); text-transform: uppercase; letter-spacing: var(--tw); font-weight: 600; margin-bottom: 5px; }
+  .hero-status .eyebrow .tag { color: var(--orange); margin-left: 7px; font-weight: 700; }
+  .hline { display: flex; align-items: center; gap: 12px; }
+  .hero-status h1 { font-weight: 300; font-size: 40px; line-height: 1; color: var(--ink-4); letter-spacing: -0.015em; transition: color 300ms; }
+  .hero-status h1.ok { color: var(--green); }
+  .hero-status h1.down { color: var(--red); }
+  .hero-status h1.warn { color: var(--amber); }
+  .pulse-dot { width: 15px; height: 15px; border-radius: 50%; background: var(--red); position: relative; flex: none; transition: background 300ms; }
+  .pulse-dot.ok { background: var(--green); }
+  .pulse-dot.ok::after { content: ''; position: absolute; inset: -5px; border-radius: 50%; border: 2px solid var(--green); animation: heropulse 2s ease-out infinite; }
+  @keyframes heropulse { 0% { transform: scale(.55); opacity: .9; } 100% { transform: scale(1.45); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .pulse-dot.ok::after { animation: none; opacity: 0; } }
+  .hero-status .sub { margin-top: 5px; font-size: 11px; color: var(--ink-3); line-height: 1.4; min-height: 30px; }
+  .chips { display: flex; gap: 8px; margin-top: 9px; flex-wrap: wrap; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; color: var(--red); background: var(--red-soft); padding: 4px 10px; transition: color 300ms, background 300ms; }
+  .chip .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .chip.ok { color: var(--green); background: var(--green-soft); }
+
+  .diagram-wrap { min-width: 0; }
+  .diagram-wrap svg { width: 100%; height: auto; max-height: 168px; display: block; overflow: visible; }
+
+  .hero-rtt { display: flex; flex-direction: column; gap: 6px; }
+  .hero-rtt .head { display: flex; justify-content: space-between; align-items: baseline; }
+  .hero-rtt .lbl { font-size: 9.5px; color: var(--ink-3); letter-spacing: var(--tw); text-transform: uppercase; font-weight: 600; }
+  .hero-rtt .val { font-weight: 200; font-size: 30px; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .hero-rtt .val .u { font-size: 12px; color: var(--ink-3); font-weight: 400; margin-left: 3px; }
+  #rtt-canvas { width: 100%; height: 52px; border-bottom: 1px solid var(--rule-soft); }
+
+  /* ---------------- DIAGRAM (SVG) ---------------- */
+  .tun rect { fill: rgba(0,0,0,0.012); stroke: var(--rule); stroke-width: 1.5; transition: stroke 500ms, fill 500ms; }
+  #tun-vpn.on rect { stroke: var(--orange); fill: rgba(235,106,31,0.04); }
+  .tun-label { font-family: var(--f-d); font-size: 10.5px; font-weight: 700; letter-spacing: 0.13em; fill: var(--ink-4); text-anchor: middle; transition: fill 500ms; }
+  #tun-vpn.on .tun-label { fill: var(--orange); }
+  .tun .lock { opacity: 0; transition: opacity 500ms; }
+  .tun.on .lock { opacity: 1; }
+  .lock circle { fill: var(--bg); stroke-width: 1.3; }
+  .lock .glyph { fill: none; stroke-width: 1.2; stroke-linecap: round; }
+  #tun-vpn .lock circle, #tun-vpn .lock .glyph { stroke: var(--orange); }
+
+  .seg line { stroke: var(--rule); stroke-width: 1.5; transition: stroke 500ms; }
+  #seg-red line { stroke-dasharray: 3 6; }
+  #seg-red.on line { stroke: var(--red); }
+  #seg-red.on .tun-label { fill: var(--red); }
+
+  .lane { stroke: rgba(0,0,0,0.10); stroke-width: 1.2; stroke-dasharray: 1 9; stroke-linecap: round; }
+  svg[data-live="true"] .lane { stroke: rgba(0,0,0,0.22); animation: laneflow 1.1s linear infinite; }
+  @keyframes laneflow { to { stroke-dashoffset: -10; } }
+
+  .pkt { opacity: 0; transition: opacity 400ms; }
+  svg[data-live="true"] .pkt { opacity: 1; }
+  .pkt.fwd { fill: var(--orange); }
+  .pkt.rev { fill: var(--blue); }
+  .pkt-ring { fill: none; stroke-width: 1; opacity: 0; }
+  svg[data-live="true"] .pkt-ring { opacity: 0.45; }
+  .pkt-ring.fwd { stroke: var(--orange); }
+  .pkt-ring.rev { stroke: var(--blue); }
+
+  .node .plate { fill: var(--bg); stroke: var(--rule); stroke-width: 1.5; transition: stroke 500ms; }
+  .node .draw { stroke: var(--ink-4); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; transition: stroke 500ms; }
+  .node .draw.fill { fill: var(--ink-4); stroke: none; transition: fill 500ms; }
+  .node.on .plate { stroke: var(--ink-3); }
+  .node.on .draw { stroke: var(--ink); }
+  .node.on .draw.fill { fill: var(--ink); }
+  .node.accent.on .plate { stroke: var(--orange); }
+  .node.danger.on .draw { stroke: var(--red); }
+  .node .name { font-family: var(--f-d); font-size: 14px; font-weight: 600; fill: var(--ink-4); text-anchor: middle; transition: fill 500ms; }
+  .node .sub { font-family: var(--f-d); font-size: 9.5px; font-weight: 600; letter-spacing: 0.12em; fill: var(--ink-4); text-anchor: middle; opacity: 0.85; }
+  .node.on .name { fill: var(--ink); }
+  .statdot { fill: var(--red); transition: fill 400ms; }
+  .node.on .statdot { fill: var(--green); }
+  .statpulse { fill: none; stroke: var(--green); stroke-width: 1.4; opacity: 0; }
+  .node.on .statpulse { animation: statpulse 2.6s ease-out infinite; }
+  @keyframes statpulse {
+    0%   { r: 4;  opacity: 0.55; }
+    70%  { r: 13; opacity: 0; }
+    100% { r: 13; opacity: 0; }
   }
 
-  .header-right {
-    display: flex; align-items: center; gap: 12px;
-  }
-  .clock {
-    font-family: 'JetBrains Mono', 'SF Mono', monospace;
-    font-size: 12px;
-    color: var(--fg-1);
-    letter-spacing: 0;
-    font-variant-numeric: tabular-nums;
-  }
-  .icon-btn {
-    background: var(--bg-2);
-    border: 1px solid var(--line-strong);
-    color: var(--fg-1);
-    width: 34px; height: 34px;
-    display: grid; place-items: center;
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.2, 0, 0.2, 1);
-    border-radius: var(--r-pill);
-  }
-  .icon-btn:hover {
-    border-color: var(--privoro);
-    color: var(--privoro-bright);
-    background: rgba(0,119,139,0.08);
-    transform: scale(1.05);
-  }
-  .icon-btn:active { transform: scale(0.96); }
-  .icon-btn svg { width: 16px; height: 16px; }
-
-  /* HERO with VPN flow */
-  .hero {
-    display: grid;
-    grid-template-columns: 1fr 280px;
-    gap: 0;
-    align-items: stretch;
-    background: linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 100%);
-    border: 1px solid var(--line);
-    border-radius: var(--r-lg);
-    box-shadow: var(--shadow-1);
-    position: relative;
-    overflow: hidden;
-  }
-  .hero::before {
-    content: '';
-    position: absolute; inset: 0;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='52' viewBox='0 0 60 52'><path d='M30 1 L58 17 L58 35 L30 51 L2 35 L2 17 Z' fill='none' stroke='%2300778B' stroke-width='0.6' opacity='0.08'/></svg>");
-    background-position: right center;
-    background-repeat: repeat;
-    pointer-events: none;
-  }
-  .hero > * { position: relative; z-index: 1; }
-
-  .vpn-flow {
-    padding: 12px 22px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-  .vpn-flow-status {
-    display: flex; flex-direction: column; gap: 2px;
-    min-width: 130px;
-  }
-  .vpn-flow-eyebrow {
-    font-size: 10px;
-    color: var(--fg-2);
-    letter-spacing: 0.04em;
-    font-weight: 500;
-  }
-  .vpn-flow-state {
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    color: var(--fg-0);
-    line-height: 1.1;
-  }
-  .hero[data-state="offline"] .vpn-flow-state { color: var(--fg-2); }
-  .hero[data-state="degraded"] .vpn-flow-state { color: var(--warn); }
-  .vpn-flow-sub {
-    font-size: 11px;
-    color: var(--fg-2);
-    font-weight: 500;
-    letter-spacing: 0;
+  @media (prefers-reduced-motion: reduce) {
+    svg[data-live="true"] .lane { animation: none; }
+    .node.on .statpulse { animation: none; }
+    .pkt, .pkt-ring { display: none; }
   }
 
-  /* SVG VPN diagram */
-  .vpn-diagram {
-    flex: 1;
-    height: 78px;
-    min-width: 0;
-  }
-  .vpn-diagram svg { width: 100%; height: 100%; display: block; }
-
-  .vpn-node {
-    fill: var(--bg-3);
-    stroke: var(--line-strong);
-    stroke-width: 1;
-    transition: all 0.4s cubic-bezier(0.2, 0, 0.2, 1);
-  }
-  .vpn-node.endpoint {
-    fill: var(--bg-2);
-    stroke: var(--silver);
-  }
-  .vpn-node.endpoint.muted {
-    fill: var(--bg-3);
-    stroke: var(--line-strong);
-  }
-  .vpn-node.tunnel-active {
-    fill: rgba(52,196,123,0.22);
-    stroke: var(--ok-bright);
-    stroke-width: 1.6;
-    filter: drop-shadow(0 0 10px rgba(52,196,123,0.55));
-  }
-  .vpn-icon {
-    fill: var(--fg-3);
-    stroke: var(--fg-3);
-    transition: all 0.4s cubic-bezier(0.2, 0, 0.2, 1);
-  }
-  .vpn-icon.endpoint-active {
-    fill: var(--silver);
-    stroke: var(--silver);
-  }
-  .vpn-icon.tunnel-active {
-    fill: var(--ok-bright);
-    stroke: var(--ok-bright);
-    stroke-width: 1.8;
-    filter: drop-shadow(0 0 6px rgba(77,213,140,0.6));
-  }
-  .vpn-label {
-    font-family: 'Inter', sans-serif;
-    font-size: 9px;
-    font-weight: 600;
-    fill: var(--fg-3);
-    letter-spacing: 0.02em;
-    text-anchor: middle;
-    transition: fill 0.4s;
-  }
-  .vpn-label .label-sub {
-    font-size: 7.5px;
-    font-weight: 500;
-    fill: var(--fg-3);
-    letter-spacing: 0.02em;
-    transition: fill 0.4s;
-  }
-  .vpn-label.active { fill: var(--ok-bright); }
-  .vpn-label.active .label-sub { fill: var(--ok); }
-  .vpn-label.endpoint-active { fill: var(--fg-0); }
-  .vpn-link {
-    stroke: var(--fg-4);
-    stroke-width: 1.5;
-    fill: none;
-    transition: all 0.4s;
-  }
-  .vpn-link.active {
-    stroke: var(--ok);
-    stroke-width: 2.4;
-    filter: drop-shadow(0 0 6px rgba(52,196,123,0.65));
-  }
-  .lock-icon {
-    transition: opacity 0.4s;
-    opacity: 0;
-  }
-  .lock-icon.active { opacity: 1; }
-
-  .hero-rtt {
-    padding: 12px 22px 12px 18px;
-    border-left: 1px solid var(--line);
-    display: flex; flex-direction: column; justify-content: center; gap: 4px;
-    min-width: 240px;
-  }
-  .hero-rtt-head {
-    display: flex; justify-content: space-between; align-items: baseline;
-  }
-  .hero-rtt-label {
-    font-size: 10px;
-    color: var(--fg-2);
-    letter-spacing: 0.04em;
-    font-weight: 500;
-  }
-  .hero-rtt-val {
-    font-family: 'JetBrains Mono', 'SF Mono', monospace;
-    font-weight: 500;
-    font-size: 22px;
-    color: var(--fg-0);
-    line-height: 1.1;
-    letter-spacing: -0.01em;
-    font-variant-numeric: tabular-nums;
-  }
-  .hero-rtt-val .u { font-size: 11px; color: var(--fg-2); margin-left: 3px; font-weight: 400; }
-  #rtt-canvas {
-    width: 100%;
-    height: 38px;
-    display: block;
-    margin-top: 4px;
-  }
-
-  /* MAIN CONTENT */
+  /* ---------------- MAIN GRID ---------------- */
   main {
     display: grid;
-    grid-template-columns: 290px 1fr 290px;
-    gap: 10px;
+    grid-template-columns: 280px 1fr 280px;
+    gap: 22px;
     min-height: 0;
   }
+  .col { display: flex; flex-direction: column; gap: 14px; min-height: 0; min-width: 0; }
 
-  .panel {
-    background: var(--bg-1);
-    border: 1px solid var(--line);
-    border-radius: var(--r-md);
-    box-shadow: var(--shadow-1);
-    display: flex; flex-direction: column;
-    min-height: 0;
-    position: relative;
-    overflow: hidden;
-  }
-  .panel-head {
-    padding: 10px 16px;
-    border-bottom: 1px solid var(--line);
-    display: flex; justify-content: space-between; align-items: center;
-    background: var(--bg-2);
-    flex-shrink: 0;
-  }
-  .panel-head h2 {
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 12px;
-    letter-spacing: -0.01em;
-    color: var(--fg-0);
-  }
-  .panel-head .id {
-    font-family: 'JetBrains Mono', 'SF Mono', monospace;
-    font-size: 10px;
-    color: var(--fg-3);
-    letter-spacing: 0;
-    font-variant-numeric: tabular-nums;
-  }
-  .panel-body {
-    padding: 12px 16px;
-    overflow: auto;
-    flex: 1;
-    min-height: 0;
-  }
+  .panel { display: flex; flex-direction: column; min-height: 0; }
+  .phead { display: flex; align-items: baseline; justify-content: space-between; padding-bottom: 6px; border-bottom: 1px solid var(--rule); margin-bottom: 4px; }
+  .phead h3 { font-weight: 600; font-size: 12.5px; color: var(--ink); }
+  .phead .id { font-family: var(--f-m); font-size: 9.5px; color: var(--ink-4); letter-spacing: 0.08em; }
 
-  /* TUNNEL CARDS */
-  .col-left {
-    display: grid;
-    grid-template-rows: 1fr 1fr;
-    gap: 10px;
-    min-height: 0;
-  }
-  .tunnel-state {
-    display: flex; align-items: center; gap: 8px;
-    padding: 7px 12px;
-    margin-bottom: 10px;
-    border: 1px solid;
-    border-radius: var(--r-sm);
-    font-family: 'Inter', sans-serif;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0;
-  }
-  .tunnel-state.ok {
-    border-color: rgba(52,196,123,0.4);
-    color: var(--ok-bright);
-    background: rgba(52,196,123,0.08);
-  }
-  .tunnel-state .meta {
-    margin-left: auto;
-    color: var(--fg-2);
-    font-weight: 500;
-    font-family: 'JetBrains Mono', 'SF Mono', monospace;
-    font-size: 10px;
-  }
-  .tunnel-state .dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: currentColor;
-    box-shadow: 0 0 6px currentColor;
-    animation: pulse 2s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-  }
-  .kv-row {
-    display: grid;
-    grid-template-columns: 76px 1fr;
-    padding: 5px 0;
-    border-bottom: 1px solid var(--line);
-    align-items: center;
-    gap: 10px;
-  }
-  .kv-row:last-child { border-bottom: none; }
-  .kv-row .k {
-    font-family: 'Inter', sans-serif;
-    font-size: 10px;
-    color: var(--fg-2);
-    letter-spacing: 0;
-    font-weight: 500;
-  }
-  .kv-row .v {
-    font-family: 'JetBrains Mono', 'SF Mono', monospace;
-    font-size: 11px;
-    color: var(--fg-0);
-    word-break: break-all;
-    font-variant-numeric: tabular-nums;
-  }
-  .badges {
-    display: flex; flex-wrap: wrap; gap: 5px;
-    margin-top: 8px;
-  }
-  .badge {
-    font-family: 'Inter', sans-serif;
-    font-size: 9px;
-    padding: 3px 9px;
-    border: 1px solid var(--line-strong);
-    color: var(--fg-1);
-    letter-spacing: 0;
-    font-weight: 600;
-    border-radius: var(--r-pill);
-  }
-  .badge.privoro {
-    border-color: var(--privoro);
-    color: var(--privoro-bright);
-    background: rgba(0,119,139,0.08);
-  }
+  .kv { overflow: auto; min-height: 0; }
+  .kv-row { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; padding: 3.5px 1px; border-bottom: 1px dotted var(--rule); }
+  .kv-row .k { font-size: 9.5px; color: var(--ink-3); letter-spacing: var(--tm); text-transform: uppercase; font-weight: 600; flex: none; }
+  .kv-row .v { font-family: var(--f-m); font-size: 11px; color: var(--ink); text-align: right; word-break: break-all; }
+  .kv-row .v.ok { color: var(--green); font-weight: 500; }
+  .kv-row .v.bad { color: var(--red); font-weight: 500; }
 
-  /* CENTER COLUMN */
-  .col-center {
-    display: grid;
-    grid-template-rows: 60px 1fr;
-    gap: 10px;
-    min-height: 0;
-  }
-  .actions {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-  }
-  .action-btn {
-    background: var(--bg-1);
-    border: 1px solid var(--line-strong);
-    color: var(--fg-0);
-    padding: 10px 14px;
-    cursor: pointer;
-    text-align: left;
-    transition: all 0.2s cubic-bezier(0.2, 0, 0.2, 1);
-    font-family: 'Inter', sans-serif;
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    overflow: hidden;
-    border-radius: var(--r-md);
-    box-shadow: var(--shadow-1);
-  }
-  .action-btn:hover, .action-btn:focus-visible {
-    border-color: var(--privoro);
-    background: var(--bg-2);
-    outline: none;
-    transform: translateY(-1px);
-  }
-  .action-btn:active { transform: translateY(0); }
-  .action-btn[data-active="true"] {
-    border-color: var(--privoro);
-    background: linear-gradient(180deg, var(--bg-2), rgba(0,119,139,0.08));
-    box-shadow: var(--shadow-2), 0 0 0 1px var(--privoro);
-  }
-  .action-btn .icon {
-    width: 28px; height: 28px;
-    display: grid; place-items: center;
-    color: var(--privoro-bright);
-    flex-shrink: 0;
-    background: rgba(0,119,139,0.1);
-    border-radius: var(--r-sm);
-  }
-  .action-btn .icon svg { width: 16px; height: 16px; }
-  .action-btn .body { flex: 1; min-width: 0; }
-  .action-btn .ttl {
-    font-weight: 600;
-    font-size: 13px;
-    letter-spacing: -0.01em;
-    line-height: 1.1;
-  }
-  .action-btn .desc {
-    font-family: 'Inter', sans-serif;
-    font-size: 10px;
-    color: var(--fg-2);
-    letter-spacing: 0;
-    margin-top: 2px;
-    font-weight: 500;
-  }
+  .tstate { display: flex; align-items: center; gap: 7px; padding: 5px 1px 6px; font-size: 11.5px; font-weight: 600; color: var(--green); }
+  .tstate .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .tstate.err { color: var(--red); }
+  .tstate .meta { margin-left: auto; font-family: var(--f-m); font-size: 10.5px; color: var(--ink-3); font-weight: 400; }
 
-  /* STAGE */
-  .stage {
-    background: var(--bg-1);
-    border: 1px solid var(--line);
-    border-radius: var(--r-md);
-    box-shadow: var(--shadow-1);
-    display: flex; flex-direction: column;
-    min-height: 0;
-    position: relative;
-    overflow: hidden;
-  }
-  .stage-head {
-    padding: 10px 16px;
-    border-bottom: 1px solid var(--line);
-    display: flex; justify-content: space-between; align-items: center;
-    background: var(--bg-2);
-    flex-shrink: 0;
-  }
-  .stage-head h2 {
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 12px;
-    letter-spacing: -0.01em;
-    color: var(--fg-0);
-  }
-  .stage-head .id {
-    font-family: 'JetBrains Mono', 'SF Mono', monospace;
-    font-size: 10px;
-    color: var(--fg-3);
-    letter-spacing: 0;
-  }
-  .stage-body {
-    padding: 12px;
-    flex: 1;
-    overflow: hidden;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-  }
-  .pane { display: none; flex-direction: column; gap: 10px; height: 100%; min-height: 0; }
-  .pane[data-active="true"] { display: flex; }
+  .pills { margin-top: 7px; display: flex; gap: 5px; flex-wrap: wrap; }
+  .pill { display: inline-block; padding: 2px 8px; font-size: 8.5px; text-transform: uppercase; letter-spacing: var(--tw); font-weight: 700; color: var(--ink-3); background: var(--soft); border: 1px solid var(--rule); }
+  .pill.orange { color: var(--orange); background: var(--orange-soft); border-color: transparent; }
+  .pill.blue { color: var(--blue); background: var(--blue-soft); border-color: transparent; }
 
-  /* SPEED METRICS */
-  .metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    flex-shrink: 0;
-  }
-  .metric {
-    background: var(--bg-2);
-    border: 1px solid var(--line);
-    border-radius: var(--r-sm);
-    padding: 10px 12px;
-    position: relative;
-    transition: all 0.3s cubic-bezier(0.2, 0, 0.2, 1);
-  }
-  .metric.active {
-    border-color: var(--privoro);
-    background: linear-gradient(180deg, var(--bg-2), rgba(0,119,139,0.05));
-  }
-  .metric .lbl {
-    font-family: 'Inter', sans-serif;
-    font-size: 10px;
-    color: var(--fg-2);
-    letter-spacing: 0;
-    margin-bottom: 4px;
-    font-weight: 500;
-  }
-  .metric .val {
-    font-family: 'JetBrains Mono', 'SF Mono', monospace;
-    font-size: 22px;
-    font-weight: 500;
-    color: var(--fg-0);
-    line-height: 1;
-    letter-spacing: -0.02em;
-    font-variant-numeric: tabular-nums;
-  }
-  .metric .val .u {
-    font-size: 11px;
-    color: var(--fg-2);
-    margin-left: 3px;
-    font-weight: 400;
-    letter-spacing: 0;
-  }
-  .metric.active .val { color: var(--privoro-bright); }
+  /* ---------------- CENTER: TABS + PANES ---------------- */
+  .stage { display: flex; flex-direction: column; min-height: 0; }
+  .tabs { display: flex; border-bottom: 1px solid var(--rule); flex: none; }
+  .tab { padding: 8px 0; margin-right: 30px; font-size: 11px; font-weight: 600; letter-spacing: var(--tm); color: var(--ink-3); cursor: pointer; border: 0; border-bottom: 1.5px solid transparent; margin-bottom: -1px; text-transform: uppercase; background: none; font-family: var(--f-d); transition: color 120ms; }
+  .tab:hover { color: var(--ink); }
+  .tab[data-active="true"] { color: var(--ink); border-bottom-color: var(--orange); }
+  .tab .num { color: var(--ink-4); margin-right: 7px; font-family: var(--f-m); font-size: 9px; font-weight: 400; }
 
-  /* CHART */
-  .chart-box {
-    background: var(--bg-2);
-    border: 1px solid var(--line);
-    border-radius: var(--r-sm);
-    padding: 10px 12px;
-    flex: 1;
-    display: flex; flex-direction: column;
-    min-height: 0;
-  }
-  .chart-head {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 6px;
-    flex-shrink: 0;
-  }
-  .chart-title {
-    font-family: 'Inter', sans-serif;
-    font-size: 10px;
-    color: var(--fg-2);
-    letter-spacing: 0;
-    font-weight: 500;
-  }
-  .chart-legend {
-    display: flex; gap: 14px;
-    font-family: 'Inter', sans-serif;
-    font-size: 10px;
-    letter-spacing: 0;
-    color: var(--fg-2);
-    font-weight: 500;
-  }
-  .chart-legend .dot {
-    display: inline-block;
-    width: 9px; height: 2px;
-    border-radius: 1px;
-    margin-right: 6px;
-    vertical-align: middle;
-  }
-  .chart-legend .dl-color { background: var(--privoro-bright); }
-  .chart-legend .ul-color { background: var(--silver); }
-  .chart-canvas-wrap {
-    flex: 1;
-    position: relative;
-    min-height: 0;
-  }
-  canvas.live-chart {
-    width: 100%;
-    height: 100%;
-    display: block;
-    position: absolute;
-    inset: 0;
-  }
+  .pane { display: none; padding-top: 12px; flex: 1; min-height: 0; }
+  .pane[data-active="true"] { display: flex; flex-direction: column; }
 
-  /* PROGRESS */
-  .progress-row {
-    display: flex; align-items: center; gap: 12px;
-    flex-shrink: 0;
-  }
-  .progress-track {
-    flex: 1;
-    height: 6px;
-    background: var(--bg-3);
-    border-radius: var(--r-pill);
-    overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--privoro-dim), var(--privoro-bright));
-    width: 0%;
-    transition: width 0.2s ease;
-    border-radius: var(--r-pill);
-  }
-  .progress-status {
-    font-family: 'JetBrains Mono', 'SF Mono', monospace;
-    font-size: 11px;
-    color: var(--fg-2);
-    letter-spacing: 0;
-    min-width: 140px;
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-  }
-  .progress-status.err { color: var(--err); }
+  .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); margin-bottom: 12px; flex: none; }
+  .metric { padding: 8px 14px; border-right: 1px solid var(--rule); }
+  .metric:last-child { border-right: 0; }
+  .metric .lbl { font-size: 8.5px; color: var(--ink-3); letter-spacing: var(--tw); text-transform: uppercase; font-weight: 600; margin-bottom: 4px; }
+  .metric .val { font-weight: 200; font-size: 25px; line-height: 1; color: var(--ink-4); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; transition: color 200ms; white-space: nowrap; }
+  .metric .val .u { font-size: 11px; color: var(--ink-4); font-weight: 400; margin-left: 4px; letter-spacing: 0; }
+  .metric.active .val { color: var(--ink); }
+  .metric.active .val .u { color: var(--ink-3); }
 
-  /* CONTROLS */
-  .controls {
-    display: flex; gap: 8px;
-    flex-wrap: wrap;
-    align-items: center;
-    flex-shrink: 0;
-  }
-  .btn {
-    background: var(--privoro);
-    color: #fff;
-    border: 1px solid var(--privoro);
-    padding: 8px 18px;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 12px;
-    letter-spacing: -0.005em;
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.2, 0, 0.2, 1);
-    border-radius: var(--r-pill);
-  }
-  .btn:hover { background: var(--privoro-bright); border-color: var(--privoro-bright); transform: scale(1.02); }
-  .btn:active { transform: scale(0.98); }
-  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-  .btn.ghost {
-    background: transparent;
-    color: var(--privoro-bright);
-    border-color: var(--privoro-dim);
-  }
-  .btn.ghost:hover {
-    border-color: var(--privoro);
-    background: rgba(0,119,139,0.08);
-  }
-  .btn.subtle {
-    background: var(--bg-2);
-    color: var(--fg-1);
-    border-color: var(--line-strong);
-  }
-  .btn.subtle:hover { color: var(--fg-0); border-color: var(--privoro); }
-  select.control, input.control {
-    background: var(--bg-2);
-    color: var(--fg-0);
-    border: 1px solid var(--line-strong);
-    padding: 7px 14px;
-    font-family: 'Inter', sans-serif;
-    font-size: 11px;
-    letter-spacing: 0;
-    border-radius: var(--r-pill);
-    font-weight: 500;
-  }
-  select.control:focus, input.control:focus {
-    outline: none;
-    border-color: var(--privoro);
-  }
+  .chart-box { display: flex; flex-direction: column; flex: 1; min-height: 0; margin-bottom: 10px; }
+  .chart-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; flex: none; }
+  .chart-title { font-size: 9px; color: var(--ink-3); letter-spacing: var(--tw); text-transform: uppercase; font-weight: 600; }
+  .chart-legend { display: flex; gap: 14px; font-size: 10px; color: var(--ink-3); }
+  .chart-legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .chart-legend .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+  .dl-color { background: var(--orange); }
+  .ul-color { background: var(--blue); }
+  .chart-canvas-wrap { flex: 1; min-height: 70px; border: 1px solid var(--rule); background: var(--soft); position: relative; }
+  .live-chart { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 
-  /* VIDEO PANE */
-  .video-layout {
-    display: grid;
-    grid-template-columns: 1fr 220px;
-    gap: 10px;
-    flex: 1;
-    min-height: 0;
-  }
-  .video-col {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    min-height: 0;
-    min-width: 0;
-  }
-  .video-frame {
-    background: #000;
-    border: 1px solid var(--line);
-    border-radius: var(--r-md);
-    position: relative;
-    overflow: hidden;
-    flex: 1;
-    min-height: 0;
-  }
-  .video-frame iframe { width: 100%; height: 100%; border: none; display: block; }
-  .video-placeholder {
-    position: absolute; inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    color: var(--fg-2);
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    letter-spacing: 0;
-    background: var(--bg-2);
-    text-align: center;
-    padding: 20px;
-    font-weight: 500;
-  }
-  .video-stats {
-    display: flex; flex-direction: column; gap: 4px;
-    overflow: auto;
-  }
-  .stat-row {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 7px 12px;
-    background: var(--bg-2);
-    border: 1px solid var(--line);
-    border-radius: var(--r-sm);
-    font-family: 'Inter', sans-serif;
-    font-size: 11px;
-  }
-  .stat-row .k {
-    color: var(--fg-2);
-    letter-spacing: 0;
-    font-size: 10px;
-    font-weight: 500;
-  }
-  .stat-row .v {
-    color: var(--fg-0);
-    font-family: 'JetBrains Mono', 'SF Mono', monospace;
-    font-variant-numeric: tabular-nums;
-  }
+  .progress-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; flex: none; }
+  .progress-track { flex: 1; height: 3px; background: var(--rule-soft); overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; background: var(--orange); transition: width 250ms linear; }
+  .progress-status { font-family: var(--f-m); font-size: 10px; color: var(--ink-3); min-width: 140px; text-align: right; }
+  .progress-status.err { color: var(--red); }
 
-  /* RIGHT COLUMN */
-  .col-right {
-    display: grid;
-    grid-template-rows: 1fr;
-    gap: 10px;
-    min-height: 0;
-  }
-  .conn-rows .kv-row { grid-template-columns: 86px 1fr; }
-  .conn-rows .kv-row .v { text-align: right; }
+  .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; flex: none; }
+  .btn { appearance: none; border: 1px solid var(--ink); background: var(--ink); color: #fff; font-family: var(--f-d); font-size: 9.5px; font-weight: 700; letter-spacing: var(--tw); text-transform: uppercase; padding: 8px 16px; cursor: pointer; transition: background 120ms, color 120ms, border-color 120ms; }
+  .btn:hover { background: var(--orange); border-color: var(--orange); }
+  .btn:disabled { opacity: 0.4; cursor: default; }
+  .btn:disabled:hover { background: var(--ink); border-color: var(--ink); }
+  .btn.ghost { background: none; color: var(--ink-2); border-color: var(--rule); }
+  .btn.ghost:hover { border-color: var(--ink); color: var(--ink); background: none; }
+  .btn.subtle { background: none; border-color: transparent; color: var(--ink-3); padding-left: 6px; padding-right: 6px; }
+  .btn.subtle:hover { color: var(--ink); background: none; border-color: transparent; }
+  select.control, input.control { appearance: none; border: 1px solid var(--rule); background: var(--bg); color: var(--ink); font-family: var(--f-m); font-size: 11px; padding: 7px 10px; border-radius: 0; }
+  select.control:focus, input.control:focus { outline: none; border-color: var(--ink-3); }
 
-  /* MAP */
-  .map-section {
-    background: var(--bg-1);
-    border: 1px solid var(--line);
-    border-radius: var(--r-md);
-    box-shadow: var(--shadow-1);
-    display: flex; flex-direction: column;
-    min-height: 0;
-    overflow: hidden;
-  }
-  .map-head {
-    padding: 10px 16px;
-    border-bottom: 1px solid var(--line);
-    background: var(--bg-2);
-    display: flex; justify-content: space-between; align-items: center;
-    flex-shrink: 0;
-  }
-  .map-head h2 {
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 12px;
-    letter-spacing: -0.01em;
-    color: var(--fg-0);
-  }
-  .map-legend {
-    display: flex; gap: 18px;
-    font-family: 'Inter', sans-serif;
-    font-size: 10px;
-    letter-spacing: 0;
-    color: var(--fg-2);
-    font-weight: 500;
-  }
-  .map-legend .item { display: flex; align-items: center; gap: 6px; }
-  .map-legend .swatch {
-    width: 9px; height: 9px;
-    border: 1px solid currentColor;
-    border-radius: 50%;
-  }
-  #map { flex: 1; background: var(--bg-2); min-height: 0; }
-  .leaflet-container { background: #07090b; }
-  .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.85) saturate(0.6); }
-  .leaflet-control-attribution {
-    background: rgba(7,9,11,0.85) !important;
-    color: var(--fg-2) !important;
-    font-family: 'JetBrains Mono', monospace !important;
-    font-size: 9px !important;
-  }
-  .leaflet-control-attribution a { color: var(--fg-1) !important; }
-  .leaflet-control-zoom a {
-    background: var(--bg-2) !important;
-    color: var(--fg-0) !important;
-    border-color: var(--line) !important;
-    font-family: 'JetBrains Mono', monospace !important;
-  }
-  .leaflet-control-zoom a:hover { background: var(--bg-3) !important; }
-  .map-marker {
-    width: 12px; height: 12px;
-    border-radius: 50%;
-    border: 2px solid currentColor;
-    background: #0a0d10;
-    box-shadow: 0 0 0 3px rgba(0,0,0,0.5), 0 0 10px currentColor;
-    position: relative;
-  }
-  .map-marker::after {
-    content: '';
-    position: absolute; inset: -6px;
-    border: 1px solid currentColor;
-    border-radius: 50%;
-    opacity: 0.4;
-    animation: ring 2.4s ease-out infinite;
-  }
-  @keyframes ring {
-    0% { transform: scale(0.5); opacity: 0.6; }
-    100% { transform: scale(2); opacity: 0; }
-  }
-  .marker-device { color: var(--silver); }
-  .marker-egress { color: var(--privoro-bright); }
-  .leaflet-tooltip {
-    background: var(--bg-2) !important;
-    color: var(--fg-0) !important;
-    border: 1px solid var(--line-strong) !important;
-    border-radius: var(--r-sm) !important;
-    font-family: 'Inter', sans-serif !important;
-    font-size: 10px !important;
-    letter-spacing: 0 !important;
-    padding: 5px 10px !important;
-    box-shadow: var(--shadow-2) !important;
-    font-weight: 500 !important;
-  }
-  .leaflet-tooltip-top:before, .leaflet-tooltip-bottom:before,
-  .leaflet-tooltip-left:before, .leaflet-tooltip-right:before { display: none !important; }
+  /* video */
+  .video-layout { display: grid; grid-template-columns: 1.6fr 1fr; gap: 18px; align-items: start; flex: 1; min-height: 0; }
+  .video-col { display: flex; flex-direction: column; min-height: 0; height: 100%; }
+  .video-frame { position: relative; flex: 1; min-height: 120px; background: var(--soft); border: 1px solid var(--rule); overflow: hidden; margin-bottom: 10px; }
+  .video-frame iframe { width: 100%; height: 100%; border: 0; }
+  .video-placeholder { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--f-m); font-size: 10.5px; color: var(--ink-4); text-align: center; padding: 14px; z-index: 1; }
 
-  /* SETTINGS MODAL */
-  .modal-bg {
-    position: fixed; inset: 0;
-    background: rgba(7,9,11,0.7);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    display: none;
-    align-items: center; justify-content: center;
-    z-index: 9999;
-  }
+  /* trace */
+  .trace-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; flex: none; }
+  .trace-controls input { flex: 1; min-width: 160px; }
+  .trace-source { font-size: 9.5px; color: var(--ink-4); }
+  .trace-output { font-family: var(--f-m); font-size: 10.5px; line-height: 1.6; color: var(--ink-2); background: var(--soft); border: 1px solid var(--rule); padding: 14px; flex: 1; min-height: 0; overflow: auto; white-space: pre-wrap; word-break: break-word; }
+  .trace-hint { color: var(--ink-4); }
+  .trace-line-error { color: var(--red); }
+  .trace-line-running { color: var(--ink-3); }
+  .blink { animation: blink 1s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* ---------------- MAP ROW ---------------- */
+  .map-section { display: flex; flex-direction: column; min-height: 0; height: 188px; flex: none; }
+  .map-head { display: flex; align-items: baseline; justify-content: space-between; padding-bottom: 5px; }
+  .map-head h3 { font-weight: 600; font-size: 12.5px; color: var(--ink); }
+  .map-legend { display: flex; gap: 18px; font-size: 10px; color: var(--ink-3); }
+  .map-legend .item { display: inline-flex; align-items: center; gap: 6px; }
+  .map-legend .swatch { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+  #map { flex: 1; min-height: 0; border: 1px solid var(--rule); background: var(--soft); z-index: 1; }
+  .map-marker { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.25); }
+  .marker-device { background: var(--ink-3); }
+  .marker-egress { background: var(--orange); }
+  .leaflet-container { font-family: var(--f-d); font-size: 11px; }
+
+  /* ---------------- MODAL ---------------- */
+  .modal-bg { position: fixed; inset: 0; background: rgba(26,26,26,0.32); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 24px; }
   .modal-bg[data-open="true"] { display: flex; }
-  .modal {
-    background: var(--bg-1);
-    border: 1px solid var(--line-strong);
-    border-radius: var(--r-lg);
-    width: min(560px, 90vw);
-    max-height: 85vh;
-    overflow: auto;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.05);
-  }
-  .modal-head {
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--line);
-    display: flex; justify-content: space-between; align-items: center;
-    background: var(--bg-2);
-  }
-  .modal-head h3 {
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 15px;
-    letter-spacing: -0.015em;
-    color: var(--fg-0);
-  }
+  .modal { background: var(--bg); border: 1px solid var(--rule); width: 100%; max-width: 440px; box-shadow: 0 24px 64px rgba(0,0,0,0.18); }
+  .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid var(--rule); }
+  .modal-head h3 { font-weight: 600; font-size: 14px; color: var(--ink); }
   .modal-body { padding: 20px; }
-  .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
-  .field label {
-    font-family: 'Inter', sans-serif;
-    font-size: 11px;
-    color: var(--fg-2);
-    letter-spacing: 0;
-    font-weight: 500;
-  }
-  .field .help {
-    font-size: 11px;
-    color: var(--fg-2);
-    line-height: 1.5;
-  }
-  .field input {
-    background: var(--bg-2);
-    color: var(--fg-0);
-    border: 1px solid var(--line-strong);
-    padding: 11px 14px;
-    font-family: 'JetBrains Mono', 'SF Mono', monospace;
-    font-size: 12px;
-    letter-spacing: 0;
-    width: 100%;
-    border-radius: var(--r-sm);
-  }
-  .field input:focus {
-    outline: none;
-    border-color: var(--privoro);
-    box-shadow: 0 0 0 3px rgba(0,119,139,0.2);
-  }
-  .modal-foot {
-    padding: 14px 20px;
-    border-top: 1px solid var(--line);
-    display: flex; justify-content: flex-end; gap: 8px;
-    background: var(--bg-2);
-  }
+  .field label { display: block; font-size: 9.5px; color: var(--ink-3); letter-spacing: var(--tw); text-transform: uppercase; font-weight: 600; margin-bottom: 7px; }
+  .field input { width: 100%; }
+  .field .help { margin-top: 8px; font-size: 11px; color: var(--ink-4); line-height: 1.5; }
+  .modal-foot { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 20px; border-top: 1px solid var(--rule); }
 
-  /* HOSTING WARNING */
-  .file-warning {
-    display: none;
-    position: fixed; left: 50%; bottom: 20px;
-    transform: translateX(-50%);
-    background: var(--warn-dim);
-    border: 1px solid var(--warn);
-    color: var(--warn);
-    padding: 12px 18px;
-    border-radius: var(--r-sm);
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    letter-spacing: 0;
-    z-index: 100;
-    max-width: 720px;
-    box-shadow: var(--shadow-2);
+  /* ---------------- SMALL SCREENS: allow scroll as fallback ---------------- */
+  @media (max-width: 1080px), (max-height: 660px) {
+    body { overflow: auto; }
+    .app { height: auto; }
+    main { grid-template-columns: 1fr 1fr; }
+    .stage { grid-column: span 2; order: -1; min-height: 420px; }
+    .hero-strip { grid-template-columns: 1fr; }
+    .hero-rtt { max-width: 280px; }
+    .map-section { height: 240px; }
   }
-  body[data-fileproto="true"] .file-warning { display: block; }
-
-  /* SCROLLBAR */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: var(--bg-1); }
-  ::-webkit-scrollbar-thumb { background: var(--bg-3); }
-  ::-webkit-scrollbar-thumb:hover { background: var(--line-strong); }
-
-  @media (max-height: 850px) {
-    .app { grid-template-rows: 48px 80px 1fr 240px; }
-    .vpn-flow-state { font-size: 18px; }
-    .hero-rtt-val { font-size: 18px; }
-  }
-  @media (max-width: 1100px) {
+  @media (max-width: 700px) {
     main { grid-template-columns: 1fr; }
-    .col-left { grid-template-rows: auto auto; }
+    .stage { grid-column: span 1; }
   }
 </style>
 </head>
@@ -1034,353 +315,334 @@
 
 <div class="app">
 
-<!-- HEADER -->
-<header>
+<!-- ====================== TOPBAR ====================== -->
+<div class="topbar">
   <div class="brand">
-    <div class="brand-logo" aria-label="Privoro">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1140 300" preserveAspectRatio="xMidYMid meet">
-        <g transform="translate(0,300) scale(0.1,-0.1)" fill="currentColor">
-          <path d="M1443 2932 c-283 -211 -631 -556 -846 -840 -271 -358 -461 -729 -563 -1101 -19 -69 -34 -125 -34 -127 0 -1 25 11 55 28 97 52 302 118 447 142 l36 7 -28 -53 c-49 -92 -71 -175 -77 -288 -9 -191 40 -324 167 -452 43 -43 82 -78 88 -78 5 0 13 30 17 68 27 272 157 434 410 512 191 58 502 66 1010 24 412 -34 834 -42 1001 -20 291 38 495 136 615 296 87 115 144 276 156 441 l6 86 -174 33 c-338 63 -658 139 -824 195 -164 55 -214 89 -234 157 -25 85 -84 182 -151 248 -139 139 -341 203 -730 230 -164 12 -165 12 -197 43 -36 34 -69 98 -89 172 -21 75 -18 214 5 280 11 30 18 55 16 55 -2 0 -39 -26 -82 -58z"/>
-          <path d="M11160 832 c-164 -89 -78 -339 106 -309 71 12 134 87 134 162 0 45 -34 109 -70 135 -45 32 -123 38 -170 12z m157 -22 c32 -21 63 -83 63 -127 0 -77 -69 -147 -144 -146 -56 1 -98 26 -125 73 -76 135 75 281 206 200z"/>
-          <path d="M11172 688 c2 -54 7 -83 16 -86 8 -2 12 7 12 27 0 26 4 31 23 31 15 0 29 -11 40 -30 10 -16 25 -30 33 -30 19 0 18 7 -5 39 -20 27 -20 28 0 44 10 9 19 26 19 36 0 35 -27 51 -86 51 l-55 0 3 -82z m98 47 c20 -24 4 -45 -35 -45 -32 0 -35 2 -35 30 0 26 3 30 29 30 16 0 34 -7 41 -15z"/>
-          <path d="M8100 784 c-100 -20 -197 -70 -250 -130 -68 -78 -108 -202 -95 -297 29 -216 189 -347 425 -347 249 0 418 145 428 367 9 183 -82 318 -256 383 -56 21 -197 34 -252 24z m174 -69 c166 -35 259 -148 259 -315 0 -100 -26 -164 -93 -232 -48 -48 -68 -60 -130 -79 -59 -18 -88 -21 -157 -16 -205 12 -331 146 -321 338 11 188 144 310 348 318 14 0 56 -6 94 -14z"/>
-          <path d="M10333 775 c-197 -43 -328 -216 -310 -409 17 -169 114 -287 279 -337 58 -18 87 -21 171 -17 112 6 160 21 245 76 146 95 203 303 128 468 -82 179 -289 268 -513 219z m193 -56 c130 -24 214 -89 255 -198 17 -46 20 -72 17 -141 -7 -137 -62 -220 -183 -277 -54 -25 -71 -28 -165 -28 -95 0 -111 3 -168 29 -75 35 -143 105 -166 173 -21 60 -21 176 0 236 19 57 92 140 148 169 42 22 130 46 177 47 14 1 52 -4 85 -10z"/>
-          <path d="M4258 764 c-5 -4 -8 -171 -8 -371 l0 -363 35 0 35 0 2 162 3 163 255 5 c207 4 262 8 290 21 154 72 158 281 6 362 -39 21 -56 22 -326 25 -157 2 -288 0 -292 -4z m585 -78 c46 -23 67 -60 67 -121 0 -60 -24 -100 -75 -125 -38 -18 -63 -20 -278 -20 l-237 0 0 138 c0 76 3 142 8 146 4 4 113 6 242 4 205 -3 240 -6 273 -22z"/>
-          <path d="M5300 401 l0 -371 35 0 35 0 0 165 0 165 168 -1 167 0 143 -165 142 -164 46 0 c29 0 43 4 39 11 -4 6 -68 79 -142 162 l-135 152 49 6 c99 13 155 45 187 107 52 104 5 240 -99 283 -21 9 -120 14 -332 17 l-303 4 0 -371z m574 299 c61 -14 98 -58 103 -122 3 -41 -1 -60 -16 -85 -42 -66 -48 -68 -333 -71 l-258 -3 0 145 0 146 233 0 c127 0 250 -5 271 -10z"/>
-          <path d="M6410 400 l0 -370 35 0 35 0 0 370 0 370 -35 0 -35 0 0 -370z"/>
-          <path d="M6773 763 c2 -5 79 -171 172 -370 l168 -363 36 0 36 0 167 368 167 367 -31 3 c-17 2 -36 -2 -43 -10 -7 -7 -74 -156 -151 -330 -76 -175 -141 -318 -144 -317 -3 0 -72 148 -154 329 l-150 330 -39 0 c-21 0 -36 -3 -34 -7z"/>
-          <path d="M8950 401 l0 -371 35 0 35 0 0 165 0 165 168 0 167 -1 143 -164 143 -165 44 0 c25 0 45 2 45 4 0 3 -63 76 -141 163 l-140 158 57 7 c128 17 196 85 198 197 1 83 -34 147 -99 181 -49 25 -51 25 -352 28 l-303 4 0 -371z m574 299 c61 -14 98 -58 103 -122 3 -41 -1 -60 -16 -85 -42 -66 -48 -68 -333 -71 l-258 -3 0 145 0 146 233 0 c127 0 250 -5 271 -10z"/>
-        </g>
-      </svg>
-    </div>
+    <img class="hound" src="data:image/png;base64,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" alt="Privoro" />
+    <div class="wordmark">PRIVORO<span class="reg">&reg;</span></div>
     <div class="brand-divider"></div>
-    <div class="brand-context">
-      <div class="brand-title">Privoro CSfC Demo Dashboard</div>
-      <div class="brand-sub">Layered VPN / Retransmission Device</div>
-    </div>
+    <div class="brand-prod">SHDW &middot; CSfC Demo</div>
   </div>
-
-  <div></div>
-
-  <div class="header-right">
-    <span class="clock" id="clock">00:00:00 UTC</span>
+  <div class="topbar-meta">
+    <div class="item">
+      <div class="label">UTC</div>
+      <div class="value mono" id="clock">00:00:00</div>
+    </div>
+    <div class="item">
+      <div class="label">Session</div>
+      <div class="value mono" id="top-uptime">00:00:00</div>
+    </div>
+    <div class="item">
+      <div class="label">Path</div>
+      <div class="badge" id="top-badge"><span class="dot"></span><span id="top-badge-text">Secure</span></div>
+    </div>
     <button class="icon-btn" id="settings-open" title="Settings">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="3"/>
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
       </svg>
     </button>
   </div>
-</header>
+</div>
 
-<!-- HERO with VPN flow -->
-<section class="hero" id="hero" data-state="online">
-  <div class="vpn-flow">
-    <div class="vpn-flow-status">
-      <div class="vpn-flow-eyebrow">Network Status</div>
-      <div class="vpn-flow-state" id="state-text">Connected</div>
-      <div class="vpn-flow-sub" id="state-sub">both tunnels established</div>
+<!-- ====================== HERO STRIP ====================== -->
+<div class="hero-strip">
+  <div class="hero-status">
+    <div class="eyebrow">Privoro Secure Transport<span class="tag">LIVE</span></div>
+    <div class="hline">
+      <span class="pulse-dot" id="state-dot"></span>
+      <h1 id="state-text">Connected</h1>
     </div>
-
-    <div class="vpn-diagram">
-      <svg viewBox="0 0 700 78" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
-        <!-- Connection lines (drawn first so they sit behind nodes) -->
-        <line id="link-1" class="vpn-link" x1="60" y1="34" x2="200" y2="34"/>
-        <line id="link-2" class="vpn-link" x1="260" y1="34" x2="400" y2="34"/>
-        <line id="link-3" class="vpn-link" x1="460" y1="34" x2="600" y2="34"/>
-
-        <!-- Lock badges over the tunnel segments (only visible when active) -->
-        <g class="lock-icon" id="lock-1" transform="translate(122, 24)">
-          <circle cx="8" cy="10" r="9" fill="#161a1f" stroke="#34c47b" stroke-width="1.2"/>
-          <rect x="4.5" y="9" width="7" height="6" rx="0.6" fill="none" stroke="#34c47b" stroke-width="1.1"/>
-          <path d="M 6 9 v -1.5 a 2 2 0 0 1 4 0 v 1.5" fill="none" stroke="#34c47b" stroke-width="1.1" stroke-linecap="round"/>
-        </g>
-        <g class="lock-icon" id="lock-2" transform="translate(322, 24)">
-          <circle cx="8" cy="10" r="9" fill="#161a1f" stroke="#34c47b" stroke-width="1.2"/>
-          <rect x="4.5" y="9" width="7" height="6" rx="0.6" fill="none" stroke="#34c47b" stroke-width="1.1"/>
-          <path d="M 6 9 v -1.5 a 2 2 0 0 1 4 0 v 1.5" fill="none" stroke="#34c47b" stroke-width="1.1" stroke-linecap="round"/>
-        </g>
-
-        <!-- Endpoint: Device (iPad) -->
-        <g id="node-device">
-          <rect class="vpn-node endpoint" x="14" y="14" width="40" height="40" rx="10"/>
-          <rect class="vpn-icon endpoint-active" x="22" y="22" width="24" height="20" rx="2.5" fill="none" stroke-width="1.4"/>
-          <circle class="vpn-icon endpoint-active" cx="34" cy="38" r="0.8"/>
-          <text class="vpn-label endpoint-active" x="34" y="64">iPad</text>
-        </g>
-
-        <!-- Inner VPN node -->
-        <g id="node-inner">
-          <rect class="vpn-node" id="node-inner-rect" x="200" y="14" width="60" height="40" rx="10"/>
-          <path class="vpn-icon" id="node-inner-icon" d="M 230 22 l -7 3 v 6 c 0 4 3 8 7 9 c 4 -1 7 -5 7 -9 v -6 z M 226 31 l 3 3 l 5 -6" fill="none" stroke-width="1.4" stroke-linejoin="round"/>
-          <text class="vpn-label" id="node-inner-label" x="230" y="64">Inner VPN</text>
-        </g>
-
-        <!-- Outer VPN (Privoro SHDW) node -->
-        <g id="node-outer">
-          <rect class="vpn-node" id="node-outer-rect" x="400" y="14" width="60" height="40" rx="10"/>
-          <path class="vpn-icon" id="node-outer-icon" d="M 430 22 l -7 3 v 6 c 0 4 3 8 7 9 c 4 -1 7 -5 7 -9 v -6 z" fill="none" stroke-width="1.4" stroke-linejoin="round"/>
-          <text class="vpn-label" id="node-outer-label" x="430" y="64">
-            Outer VPN<tspan class="label-sub" x="430" dy="10">(Privoro SHDW)</tspan>
-          </text>
-        </g>
-
-        <!-- Internet endpoint: muted by default, glows green when full path is up -->
-        <g id="node-internet">
-          <rect class="vpn-node endpoint muted" id="node-internet-rect" x="600" y="14" width="60" height="40" rx="10"/>
-          <circle class="vpn-icon" id="node-internet-icon-1" cx="630" cy="34" r="9" fill="none" stroke-width="1.4"/>
-          <ellipse class="vpn-icon" id="node-internet-icon-2" cx="630" cy="34" rx="4" ry="9" fill="none" stroke-width="1.4"/>
-          <line class="vpn-icon" id="node-internet-icon-3" x1="621" y1="34" x2="639" y2="34" stroke-width="1.4"/>
-          <text class="vpn-label" id="node-internet-label" x="630" y="64">Internet</text>
-        </g>
-      </svg>
+    <div class="sub" id="state-sub">VPN established.</div>
+    <div class="chips">
+      <div class="chip" id="chip-internet"><span class="dot"></span>Internet</div>
+      <div class="chip" id="chip-vpn"><span class="dot"></span>Privoro VPN</div>
     </div>
   </div>
+
+  <div class="diagram-wrap">
+    <svg id="path-diagram" viewBox="0 0 1180 228" data-live="false" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Transport path: iPad Pro through Privoro SHDW outer hardware, double encrypted to the CSfC backend, then onward to red network applications">
+      <defs>
+        <path id="flow-path" d="M 142 118 H 1028"/>
+        <path id="flow-path-rev" d="M 1028 118 H 142"/>
+      </defs>
+
+      <!-- PRIVORO VPN capsule: single abstracted secure transport from the device to the CSfC backend -->
+      <g id="tun-vpn" class="tun">
+        <rect x="142" y="84" width="676" height="68" rx="34"/>
+        <text class="tun-label" x="480" y="58">PRIVORO DEDICATED OUTER HARDWARE VPN &middot; AES-256-GCM &middot; FIPS 140-3</text>
+        <g class="lock" transform="translate(480,84)">
+          <circle cx="0" cy="0" r="10"/>
+          <rect class="glyph" x="-4" y="-1.5" width="8" height="6.5" rx="0.8"/>
+          <path class="glyph" d="M -2.4 -1.5 v -1.6 a 2.4 2.4 0 0 1 4.8 0 v 1.6"/>
+        </g>
+        <text class="tun-label" x="272" y="172">ENCRYPTED TRANSPORT &middot; DEVICE TO BACKEND</text>
+      </g>
+
+      <!-- RED segment: decrypted only inside the protected enclave -->
+      <g id="seg-red" class="seg">
+        <line x1="826" y1="118" x2="1028" y2="118"/>
+        <text class="tun-label" x="927" y="92">RED ENCLAVE &middot; DECRYPTED</text>
+      </g>
+
+      <!-- packet lane -->
+      <line class="lane" x1="142" y1="118" x2="1028" y2="118"/>
+
+      <!-- packets -->
+      <g id="packets">
+        <circle class="pkt fwd" r="3.4"><animateMotion dur="5.2s" repeatCount="indefinite" begin="0s"><mpath href="#flow-path"/></animateMotion></circle>
+        <circle class="pkt-ring fwd" r="6.5"><animateMotion dur="5.2s" repeatCount="indefinite" begin="0s"><mpath href="#flow-path"/></animateMotion></circle>
+        <circle class="pkt fwd" r="3.4"><animateMotion dur="5.2s" repeatCount="indefinite" begin="1.75s"><mpath href="#flow-path"/></animateMotion></circle>
+        <circle class="pkt-ring fwd" r="6.5"><animateMotion dur="5.2s" repeatCount="indefinite" begin="1.75s"><mpath href="#flow-path"/></animateMotion></circle>
+        <circle class="pkt fwd" r="3.4"><animateMotion dur="5.2s" repeatCount="indefinite" begin="3.5s"><mpath href="#flow-path"/></animateMotion></circle>
+        <circle class="pkt-ring fwd" r="6.5"><animateMotion dur="5.2s" repeatCount="indefinite" begin="3.5s"><mpath href="#flow-path"/></animateMotion></circle>
+        <circle class="pkt rev" r="2.8"><animateMotion dur="6.6s" repeatCount="indefinite" begin="0.9s"><mpath href="#flow-path-rev"/></animateMotion></circle>
+        <circle class="pkt rev" r="2.8"><animateMotion dur="6.6s" repeatCount="indefinite" begin="4.2s"><mpath href="#flow-path-rev"/></animateMotion></circle>
+      </g>
+
+      <!-- NODE: iPad Pro -->
+      <g id="node-ipad" class="node">
+        <rect class="plate" x="64" y="66" width="72" height="104" rx="9"/>
+        <rect class="draw" x="73" y="77" width="54" height="82" rx="3"/>
+        <circle class="draw fill" cx="100" cy="71.6" r="1.4"/>
+        <circle class="statdot" cx="136" cy="66" r="4"/>
+        <circle class="statpulse" cx="136" cy="66" r="4"/>
+        <text class="name" x="100" y="196">iPad Pro</text>
+        <text class="sub" x="100" y="213">INNER VPN CLIENT</text>
+      </g>
+
+      <!-- NODE: Privoro SHDW -->
+      <g id="node-shdw" class="node accent">
+        <rect class="plate" x="372" y="84" width="96" height="68" rx="14"/>
+        <path class="draw" d="M 420 98 l -15 5.6 v 11 c 0 10.5 6.4 17.8 15 21.4 c 8.6 -3.6 15 -10.9 15 -21.4 v -11 z"/>
+        <path class="draw" d="M 413 116 l 5 5 l 9.5 -11"/>
+        <circle class="statdot" cx="468" cy="84" r="4"/>
+        <circle class="statpulse" cx="468" cy="84" r="4"/>
+        <text class="name" x="420" y="196">Privoro SHDW</text>
+        <text class="sub" x="420" y="213">DEDICATED OUTER HARDWARE</text>
+      </g>
+
+      <!-- NODE: CSfC Backend -->
+      <g id="node-backend" class="node">
+        <rect class="plate" x="700" y="72" width="120" height="92" rx="9"/>
+        <rect class="draw" x="712" y="82" width="96" height="18" rx="3"/>
+        <rect class="draw" x="712" y="106" width="96" height="18" rx="3"/>
+        <rect class="draw" x="712" y="130" width="96" height="18" rx="3"/>
+        <circle class="draw fill" cx="721" cy="91" r="1.8"/>
+        <circle class="draw fill" cx="721" cy="115" r="1.8"/>
+        <circle class="draw fill" cx="721" cy="139" r="1.8"/>
+        <line class="draw" x1="752" y1="91" x2="798" y2="91"/>
+        <line class="draw" x1="752" y1="115" x2="798" y2="115"/>
+        <line class="draw" x1="752" y1="139" x2="798" y2="139"/>
+        <circle class="statdot" cx="820" cy="72" r="4"/>
+        <circle class="statpulse" cx="820" cy="72" r="4"/>
+        <text class="name" x="760" y="196">CSfC Backend</text>
+        <text class="sub" x="760" y="213">OUTER + INNER GATEWAYS &middot; GRAY CORE</text>
+      </g>
+
+      <!-- NODE: Red Network Apps -->
+      <g id="node-red" class="node danger">
+        <rect class="draw" x="1048" y="80" width="28" height="28" rx="7"/>
+        <rect class="draw" x="1084" y="80" width="28" height="28" rx="7"/>
+        <rect class="draw" x="1048" y="116" width="28" height="28" rx="7"/>
+        <rect class="draw" x="1084" y="116" width="28" height="28" rx="7"/>
+        <circle class="draw fill" cx="1062" cy="94" r="2"/>
+        <circle class="draw fill" cx="1098" cy="94" r="2"/>
+        <circle class="draw fill" cx="1062" cy="130" r="2"/>
+        <circle class="draw fill" cx="1098" cy="130" r="2"/>
+        <circle class="statdot" cx="1112" cy="80" r="4"/>
+        <circle class="statpulse" cx="1112" cy="80" r="4"/>
+        <text class="name" x="1080" y="196">Red Network Apps</text>
+        <text class="sub" x="1080" y="213">MISSION APPLICATIONS</text>
+      </g>
+    </svg>
+  </div>
+
   <div class="hero-rtt">
-    <div class="hero-rtt-head">
-      <span class="hero-rtt-label">Live RTT</span>
-      <span class="hero-rtt-val mono" id="rtt-now">--<span class="u">ms</span></span>
+    <div class="head">
+      <span class="lbl">Live RTT</span>
+      <span class="val" id="rtt-now">--<span class="u">ms</span></span>
     </div>
     <canvas id="rtt-canvas"></canvas>
   </div>
-</section>
+</div>
 
-<!-- MAIN -->
+<!-- ====================== MAIN ====================== -->
 <main>
 
-  <!-- LEFT: TUNNELS -->
-  <div class="col-left">
-    <div class="panel">
-      <div class="panel-head">
-        <h2>Tunnel A / Outer</h2>
-        <span class="id mono">VPN-A.01</span>
+  <!-- LEFT: VPN -->
+  <div class="col">
+    <div class="panel" style="flex:1;">
+      <div class="phead">
+        <h3>Privoro Dedicated Outer Hardware VPN</h3>
+        <span class="id">VPN.01</span>
       </div>
-      <div class="panel-body">
-        <div class="tunnel-state ok" id="tA-state">
-          <span class="dot"></span>
-          <span>Established</span>
-          <span class="meta" id="tA-uptime">00:00:00</span>
-        </div>
-        <div class="kv-row"><span class="k">Vendor</span><span class="v" id="tA-vendor"></span></div>
-        <div class="kv-row"><span class="k">Gateway</span><span class="v" id="tA-gw"></span></div>
-        <div class="kv-row"><span class="k">Cipher</span><span class="v" id="tA-cipher"></span></div>
-        <div class="kv-row"><span class="k">Key</span><span class="v" id="tA-key"></span></div>
-        <div class="kv-row"><span class="k">Hash</span><span class="v" id="tA-hash"></span></div>
-        <div class="kv-row"><span class="k">Cert</span><span class="v" id="tA-cert"></span></div>
-        <div class="kv-row"><span class="k">Protocol</span><span class="v" id="tA-proto"></span></div>
-        <div class="badges">
-          <span class="badge privoro">CSfC Outer</span>
-          <span class="badge">FIPS 140-3</span>
-        </div>
+      <div class="tstate" id="vpn-state"><span class="dot"></span><span>Established</span><span class="meta" id="vpn-uptime">00:00:00</span></div>
+      <div class="kv">
+        <div class="kv-row"><span class="k">Hardware</span><span class="v" id="vpn-hw"></span></div>
+        <div class="kv-row"><span class="k">Vendor</span><span class="v" id="vpn-vendor"></span></div>
+        <div class="kv-row"><span class="k">Gateway</span><span class="v" id="vpn-gw"></span></div>
+        <div class="kv-row"><span class="k">Cipher</span><span class="v" id="vpn-cipher"></span></div>
+        <div class="kv-row"><span class="k">Key</span><span class="v" id="vpn-key"></span></div>
+        <div class="kv-row"><span class="k">Hash</span><span class="v" id="vpn-hash"></span></div>
+        <div class="kv-row"><span class="k">Cert</span><span class="v" id="vpn-cert"></span></div>
+        <div class="kv-row"><span class="k">Protocol</span><span class="v" id="vpn-proto"></span></div>
       </div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-head">
-        <h2>Tunnel B / Inner</h2>
-        <span class="id mono">VPN-B.01</span>
-      </div>
-      <div class="panel-body">
-        <div class="tunnel-state ok" id="tB-state">
-          <span class="dot"></span>
-          <span>Established</span>
-          <span class="meta" id="tB-uptime">00:00:00</span>
-        </div>
-        <div class="kv-row"><span class="k">Vendor</span><span class="v" id="tB-vendor"></span></div>
-        <div class="kv-row"><span class="k">Gateway</span><span class="v" id="tB-gw"></span></div>
-        <div class="kv-row"><span class="k">Cipher</span><span class="v" id="tB-cipher"></span></div>
-        <div class="kv-row"><span class="k">Key</span><span class="v" id="tB-key"></span></div>
-        <div class="kv-row"><span class="k">Hash</span><span class="v" id="tB-hash"></span></div>
-        <div class="kv-row"><span class="k">Cert</span><span class="v" id="tB-cert"></span></div>
-        <div class="kv-row"><span class="k">Protocol</span><span class="v" id="tB-proto"></span></div>
-        <div class="badges">
-          <span class="badge privoro">CSfC Inner</span>
-          <span class="badge">Diverse Vendor</span>
-        </div>
+      <div class="pills">
+        <span class="pill orange">Privoro SHDW</span>
+        <span class="pill">CSfC</span>
+        <span class="pill">FIPS 140-3</span>
       </div>
     </div>
   </div>
 
-  <!-- CENTER: ACTIONS + STAGE -->
-  <div class="col-center">
-    <div class="actions">
-      <button class="action-btn" data-tab="speed">
-        <span class="icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 14l3-3"/>
-            <path d="M3 12a9 9 0 0 1 18 0"/>
-            <circle cx="12" cy="14" r="1.5" fill="currentColor"/>
-          </svg>
-        </span>
-        <span class="body">
-          <span class="ttl">Speed Test</span>
-          <span class="desc">throughput / latency / jitter</span>
-        </span>
-      </button>
-      <button class="action-btn" data-tab="video">
-        <span class="icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="5" width="18" height="14" rx="1"/>
-            <polygon points="10,9 16,12 10,15" fill="currentColor"/>
-          </svg>
-        </span>
-        <span class="body">
-          <span class="ttl">HD Video</span>
-          <span class="desc">720p stream diagnostics</span>
-        </span>
-      </button>
-      <button class="action-btn" data-tab="dl">
-        <span class="icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 3v12"/>
-            <path d="M7 10l5 5 5-5"/>
-            <path d="M5 21h14"/>
-          </svg>
-        </span>
-        <span class="body">
-          <span class="ttl">Bulk Transfer</span>
-          <span class="desc">large file / live throughput</span>
-        </span>
-      </button>
+  <!-- CENTER: DIAGNOSTICS -->
+  <div class="stage">
+    <div class="tabs">
+      <button class="tab" data-tab="speed"><span class="num">01</span>Speed Test</button>
+      <button class="tab" data-tab="video"><span class="num">02</span>HD Video</button>
+      <button class="tab" data-tab="dl"><span class="num">03</span>Bulk Transfer</button>
+      <button class="tab" data-tab="trace"><span class="num">04</span>Traceroute</button>
     </div>
 
-    <div class="stage">
-      <div class="stage-head">
-        <h2 id="stage-title">Speed Test</h2>
-        <span class="id mono" id="stage-id">DEMO.SPEED</span>
+    <!-- SPEED PANE -->
+    <div class="pane" data-pane="speed">
+      <div class="metrics-grid">
+        <div class="metric" id="m-down">
+          <div class="lbl">Download</div>
+          <div class="val">0.0<span class="u">Mbps</span></div>
+        </div>
+        <div class="metric" id="m-up">
+          <div class="lbl">Upload</div>
+          <div class="val">0.0<span class="u">Mbps</span></div>
+        </div>
+        <div class="metric" id="m-lat">
+          <div class="lbl">Latency</div>
+          <div class="val">0<span class="u">ms</span></div>
+        </div>
+        <div class="metric" id="m-jit">
+          <div class="lbl">Jitter</div>
+          <div class="val">0<span class="u">ms</span></div>
+        </div>
       </div>
-      <div class="stage-body">
 
-        <!-- SPEED PANE -->
-        <div class="pane" data-pane="speed">
-          <div class="metrics-grid">
-            <div class="metric" id="m-down">
-              <div class="lbl">Download</div>
-              <div class="val mono">0.0<span class="u">Mbps</span></div>
-            </div>
-            <div class="metric" id="m-up">
-              <div class="lbl">Upload</div>
-              <div class="val mono">0.0<span class="u">Mbps</span></div>
-            </div>
-            <div class="metric" id="m-lat">
-              <div class="lbl">Latency</div>
-              <div class="val mono">0<span class="u">ms</span></div>
-            </div>
-            <div class="metric" id="m-jit">
-              <div class="lbl">Jitter</div>
-              <div class="val mono">0<span class="u">ms</span></div>
-            </div>
-          </div>
-
-          <div class="chart-box">
-            <div class="chart-head">
-              <span class="chart-title">Live Throughput</span>
-              <span class="chart-legend">
-                <span><span class="dot dl-color"></span>Download</span>
-                <span><span class="dot ul-color"></span>Upload</span>
-              </span>
-            </div>
-            <div class="chart-canvas-wrap">
-              <canvas id="speed-chart" class="live-chart"></canvas>
-            </div>
-          </div>
-
-          <div class="progress-row">
-            <div class="progress-track"><div class="progress-fill" id="sp-prog"></div></div>
-            <span class="progress-status" id="sp-status">idle</span>
-          </div>
-
-          <div class="controls">
-            <button class="btn" id="sp-run">Run Test</button>
-            <button class="btn ghost" id="sp-reset">Reset</button>
-          </div>
+      <div class="chart-box">
+        <div class="chart-head">
+          <span class="chart-title">Live Throughput</span>
+          <span class="chart-legend">
+            <span><span class="dot dl-color"></span>Download</span>
+            <span><span class="dot ul-color"></span>Upload</span>
+          </span>
         </div>
-
-        <!-- VIDEO PANE -->
-        <div class="pane" data-pane="video">
-          <div class="video-layout">
-            <div class="video-col">
-              <div class="video-frame" id="video-frame">
-                <div class="video-placeholder" id="video-placeholder">click load player to begin</div>
-                <div id="yt-player" style="width:100%;height:100%;"></div>
-              </div>
-              <div class="controls">
-                <button class="btn" id="vid-play">Load Player</button>
-                <button class="btn ghost" id="vid-reset">Reload</button>
-                <button class="btn subtle" id="vid-edit">Change Video</button>
-              </div>
-            </div>
-            <div class="video-stats">
-              <div class="stat-row"><span class="k">State</span><span class="v" id="vid-state">idle</span></div>
-              <div class="stat-row"><span class="k">Quality</span><span class="v" id="vid-q">--</span></div>
-              <div class="stat-row"><span class="k">Bitrate</span><span class="v" id="vid-rate">-- Mbps</span></div>
-              <div class="stat-row"><span class="k">Buffered</span><span class="v" id="vid-buf">0%</span></div>
-              <div class="stat-row"><span class="k">Stalls</span><span class="v" id="vid-stalls">0</span></div>
-              <div class="stat-row"><span class="k">Elapsed</span><span class="v" id="vid-time">0s</span></div>
-              <div class="stat-row"><span class="k">Bytes</span><span class="v" id="vid-bytes">0 MB</span></div>
-              <div class="stat-row"><span class="k">Video ID</span><span class="v mono" id="vid-current">--</span></div>
-            </div>
-          </div>
+        <div class="chart-canvas-wrap">
+          <canvas id="speed-chart" class="live-chart"></canvas>
         </div>
-
-        <!-- DOWNLOAD PANE -->
-        <div class="pane" data-pane="dl">
-          <div class="metrics-grid" style="grid-template-columns:repeat(3,1fr);">
-            <div class="metric" id="dl-m-bytes">
-              <div class="lbl">Transferred</div>
-              <div class="val mono">0<span class="u">MB</span></div>
-            </div>
-            <div class="metric" id="dl-m-rate">
-              <div class="lbl">Throughput</div>
-              <div class="val mono">0.0<span class="u">MB/s</span></div>
-            </div>
-            <div class="metric" id="dl-m-time">
-              <div class="lbl">Elapsed</div>
-              <div class="val mono">0.0<span class="u">s</span></div>
-            </div>
-          </div>
-
-          <div class="chart-box">
-            <div class="chart-head">
-              <span class="chart-title">Live Throughput</span>
-              <span class="chart-legend">
-                <span><span class="dot dl-color"></span>MB/s</span>
-              </span>
-            </div>
-            <div class="chart-canvas-wrap">
-              <canvas id="dl-chart" class="live-chart"></canvas>
-            </div>
-          </div>
-
-          <div class="progress-row">
-            <div class="progress-track"><div class="progress-fill" id="dl-prog"></div></div>
-            <span class="progress-status" id="dl-status">idle</span>
-          </div>
-
-          <div class="controls">
-            <button class="btn" id="dl-run">Start Transfer</button>
-            <button class="btn ghost" id="dl-cancel">Cancel</button>
-            <select class="control" id="dl-pick">
-              <option value="100">100 MB</option>
-              <option value="250" selected>250 MB</option>
-              <option value="500">500 MB</option>
-              <option value="1000">1 GB</option>
-            </select>
-          </div>
-        </div>
-
       </div>
+
+      <div class="progress-row">
+        <div class="progress-track"><div class="progress-fill" id="sp-prog"></div></div>
+        <span class="progress-status" id="sp-status">idle</span>
+      </div>
+
+      <div class="controls">
+        <button class="btn" id="sp-run">Run Test</button>
+        <button class="btn ghost" id="sp-reset">Reset</button>
+      </div>
+    </div>
+
+    <!-- VIDEO PANE -->
+    <div class="pane" data-pane="video">
+      <div class="video-layout">
+        <div class="video-col">
+          <div class="video-frame" id="video-frame">
+            <div class="video-placeholder" id="video-placeholder">click load player to begin</div>
+            <div id="yt-player" style="width:100%;height:100%;"></div>
+          </div>
+          <div class="controls">
+            <button class="btn" id="vid-play">Load Player</button>
+            <button class="btn ghost" id="vid-reset">Reload</button>
+            <button class="btn subtle" id="vid-edit">Change Video</button>
+          </div>
+        </div>
+        <div class="kv">
+          <div class="kv-row"><span class="k">State</span><span class="v" id="vid-state">idle</span></div>
+          <div class="kv-row"><span class="k">Quality</span><span class="v" id="vid-q">--</span></div>
+          <div class="kv-row"><span class="k">Bitrate</span><span class="v" id="vid-rate">-- Mbps</span></div>
+          <div class="kv-row"><span class="k">Buffered</span><span class="v" id="vid-buf">0%</span></div>
+          <div class="kv-row"><span class="k">Stalls</span><span class="v" id="vid-stalls">0</span></div>
+          <div class="kv-row"><span class="k">Elapsed</span><span class="v" id="vid-time">0s</span></div>
+          <div class="kv-row"><span class="k">Bytes</span><span class="v" id="vid-bytes">0 MB</span></div>
+          <div class="kv-row"><span class="k">Video ID</span><span class="v" id="vid-current">--</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DOWNLOAD PANE -->
+    <div class="pane" data-pane="dl">
+      <div class="metrics-grid" style="grid-template-columns:repeat(3,1fr);">
+        <div class="metric" id="dl-m-bytes">
+          <div class="lbl">Transferred</div>
+          <div class="val">0<span class="u">MB</span></div>
+        </div>
+        <div class="metric" id="dl-m-rate">
+          <div class="lbl">Throughput</div>
+          <div class="val">0.0<span class="u">MB/s</span></div>
+        </div>
+        <div class="metric" id="dl-m-time">
+          <div class="lbl">Elapsed</div>
+          <div class="val">0.0<span class="u">s</span></div>
+        </div>
+      </div>
+
+      <div class="chart-box">
+        <div class="chart-head">
+          <span class="chart-title">Live Throughput</span>
+          <span class="chart-legend">
+            <span><span class="dot dl-color"></span>MB/s</span>
+          </span>
+        </div>
+        <div class="chart-canvas-wrap">
+          <canvas id="dl-chart" class="live-chart"></canvas>
+        </div>
+      </div>
+
+      <div class="progress-row">
+        <div class="progress-track"><div class="progress-fill" id="dl-prog"></div></div>
+        <span class="progress-status" id="dl-status">idle</span>
+      </div>
+
+      <div class="controls">
+        <button class="btn" id="dl-run">Start Transfer</button>
+        <button class="btn ghost" id="dl-cancel">Cancel</button>
+        <select class="control" id="dl-pick">
+          <option value="100">100 MB</option>
+          <option value="250" selected>250 MB</option>
+          <option value="500">500 MB</option>
+          <option value="1000">1 GB</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- TRACEROUTE PANE -->
+    <div class="pane" data-pane="trace">
+      <div class="trace-controls">
+        <input type="text" id="tr-target" class="control" value="google.com" placeholder="hostname or IP" spellcheck="false" autocapitalize="off" autocorrect="off"/>
+        <button class="btn" id="tr-run">Run Trace</button>
+        <button class="btn ghost" id="tr-clear">Clear</button>
+        <span class="trace-source">via api.hackertarget.com (server-side, ~30s)</span>
+      </div>
+      <div class="trace-output" id="tr-output"><span class="trace-hint">Click Run Trace to map the network path to a target host. Note: this trace originates from the HackerTarget API server, not from the iPad through the VPN. It is useful for showing reachability and route stability.</span></div>
     </div>
   </div>
 
   <!-- RIGHT: CONNECTION PROFILE -->
-  <div class="col-right">
-    <div class="panel">
-      <div class="panel-head">
-        <h2>Connection Profile</h2>
-        <span class="id mono">NET.01</span>
+  <div class="col">
+    <div class="panel" style="flex:1;">
+      <div class="phead">
+        <h3>Connection Profile</h3>
+        <span class="id">NET.01</span>
       </div>
-      <div class="panel-body conn-rows">
+      <div class="kv">
         <div class="kv-row"><span class="k">Status</span><span class="v" id="net-status">checking</span></div>
         <div class="kv-row"><span class="k">SSID</span><span class="v" id="wifi-ssid">--</span></div>
         <div class="kv-row"><span class="k">Security</span><span class="v" id="wifi-sec">--</span></div>
@@ -1401,21 +663,21 @@
   </div>
 </main>
 
-<!-- MAP -->
-<section class="map-section">
+<!-- ====================== MAP ====================== -->
+<div class="map-section">
   <div class="map-head">
-    <h2>Network Topology / Apparent Egress</h2>
+    <h3>Topology &middot; Apparent Egress</h3>
     <div class="map-legend">
-      <div class="item" style="color:var(--silver);"><span class="swatch"></span>Device Origin</div>
-      <div class="item" style="color:var(--privoro-bright);"><span class="swatch"></span>VPN Egress</div>
+      <div class="item" style="color:var(--ink-3);"><span class="swatch"></span>Device Origin</div>
+      <div class="item" style="color:var(--orange);"><span class="swatch"></span>VPN Egress</div>
     </div>
   </div>
   <div id="map"></div>
-</section>
+</div>
 
 </div>
 
-<!-- SETTINGS MODAL -->
+<!-- ====================== SETTINGS MODAL ====================== -->
 <div class="modal-bg" id="settings-bg">
   <div class="modal">
     <div class="modal-head">
@@ -1429,7 +691,7 @@
     <div class="modal-body">
       <div class="field">
         <label>YouTube Video</label>
-        <input type="text" id="set-yt" placeholder="paste URL or ID (e.g. dQw4w9WgXcQ)" />
+        <input type="text" id="set-yt" class="control" placeholder="paste URL or ID (e.g. dQw4w9WgXcQ)" />
         <div class="help">Accepts a full YouTube URL, a youtu.be link, a /shorts/ URL, or a raw 11-character video ID. Applies on save.</div>
       </div>
     </div>
@@ -1440,14 +702,6 @@
   </div>
 </div>
 
-<!-- HOSTING WARNING (shown only when running from file://) -->
-<div class="file-warning">
-  <strong style="color:var(--fg-0);">running from file://</strong>
-  &nbsp;&nbsp; the demo network calls (speed test, file transfer, ip lookup) require an http(s) host.
-  &nbsp;&nbsp;<span style="color:var(--fg-1);">fix:</span> in terminal run <span style="color:var(--privoro-bright);">python3 -m http.server 8000</span>
-  from this folder, then open <span style="color:var(--privoro-bright);">http://localhost:8000/</span>
-</div>
-
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
   integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
@@ -1456,7 +710,8 @@
    CONFIG
 =========================================================== */
 const CONFIG = {
-  tunnelA: {
+  vpn: {
+    hardware: "Privoro SHDW",
     vendor: "Aruba Networks",
     gateway: "156.80.66.32",
     cipher: "AES-256-GCM",
@@ -1464,15 +719,6 @@ const CONFIG = {
     hash: "SHA-384",
     cert: "CN=privoro01",
     protocol: "IPsec / IKEv2",
-  },
-  tunnelB: {
-    vendor: "Cisco AnyConnect",
-    gateway: "cfwldc001.gray.bah-csfc.lab",
-    cipher: "AES-256-GCM",
-    keyAlgo: "RSA-4096",
-    hash: "SHA-384",
-    cert: "CN=privoro01",
-    protocol: "TLS 1.3 / DTLS",
   },
   wifi: {
     ssid: "E3000-c55-5g",
@@ -1483,7 +729,7 @@ const CONFIG = {
     lat: 38.9072, lng: -77.0369,
     label: "Washington, DC"
   },
-  youtubeVideoId: "aqz-KE-bpKQ",
+  youtubeVideoId: "F-VJCXQLEc8",
   speed: {
     downloadURL: "https://speed.cloudflare.com/__down?bytes=",
     uploadURL:   "https://speed.cloudflare.com/__up",
@@ -1498,23 +744,18 @@ const STATE = {
   youtubeVideoId: CONFIG.youtubeVideoId,
 };
 
-/* Detect file:// origin and warn */
-if (location.protocol === "file:") {
-  document.body.dataset.fileproto = "true";
-}
-
-/* Populate tunnels */
-function fillTunnel(prefix, t) {
-  document.getElementById(prefix + "-vendor").textContent = t.vendor;
-  document.getElementById(prefix + "-gw").textContent = t.gateway;
-  document.getElementById(prefix + "-cipher").textContent = t.cipher;
-  document.getElementById(prefix + "-key").textContent = t.keyAlgo;
-  document.getElementById(prefix + "-hash").textContent = t.hash;
-  document.getElementById(prefix + "-cert").textContent = t.cert;
-  document.getElementById(prefix + "-proto").textContent = t.protocol;
-}
-fillTunnel("tA", CONFIG.tunnelA);
-fillTunnel("tB", CONFIG.tunnelB);
+/* Populate VPN panel */
+(function fillVpn() {
+  const t = CONFIG.vpn;
+  document.getElementById("vpn-hw").textContent = t.hardware;
+  document.getElementById("vpn-vendor").textContent = t.vendor;
+  document.getElementById("vpn-gw").textContent = t.gateway;
+  document.getElementById("vpn-cipher").textContent = t.cipher;
+  document.getElementById("vpn-key").textContent = t.keyAlgo;
+  document.getElementById("vpn-hash").textContent = t.hash;
+  document.getElementById("vpn-cert").textContent = t.cert;
+  document.getElementById("vpn-proto").textContent = t.protocol;
+})();
 
 /* Populate WiFi */
 document.getElementById("wifi-ssid").textContent = CONFIG.wifi.ssid;
@@ -1531,92 +772,64 @@ function fmtUptime(ms) {
 }
 function tick() {
   const up = fmtUptime(Date.now() - sessionStart);
-  document.getElementById("tA-uptime").textContent = up;
-  document.getElementById("tB-uptime").textContent = up;
-  const utc = new Date().toISOString().slice(11,19) + " UTC";
+  document.getElementById("vpn-uptime").textContent = up;
+  document.getElementById("top-uptime").textContent = up;
+  const utc = new Date().toISOString().slice(11,19);
   document.getElementById("clock").textContent = utc;
 }
 tick();
 setInterval(tick, 1000);
 
 /* ===========================================================
-   HERO STATE + VPN FLOW VISUALIZATION
+   STATUS + TRANSPORT PATH VISUALIZATION
+   When the device has internet, every connection indicator goes
+   green at once: internet, the Privoro VPN, and all four path nodes.
 =========================================================== */
-const heroEl = document.getElementById("hero");
 const stateText = document.getElementById("state-text");
 const stateSub = document.getElementById("state-sub");
+const stateDot = document.getElementById("state-dot");
+const diagram = document.getElementById("path-diagram");
 
-/* Track per-tunnel state. We treat both tunnels as "up" while internet is
-   reachable (we cannot actually probe each gateway from a static page),
-   and mark them down when the device goes offline. */
-const TUNNEL = { outer: false, inner: false };
+const VPN = { up: false };
 
 function paintTunnel() {
-  const outerActive = TUNNEL.outer;
-  const innerActive = TUNNEL.inner;
-  const link1 = document.getElementById("link-1");
-  const link2 = document.getElementById("link-2");
-  const link3 = document.getElementById("link-3");
-  const lock1 = document.getElementById("lock-1");
-  const lock2 = document.getElementById("lock-2");
-  const outerRect = document.getElementById("node-outer-rect");
-  const outerIcon = document.getElementById("node-outer-icon");
-  const outerLabel = document.getElementById("node-outer-label");
-  const innerRect = document.getElementById("node-inner-rect");
-  const innerIcon = document.getElementById("node-inner-icon");
-  const innerLabel = document.getElementById("node-inner-label");
-  const inetRect = document.getElementById("node-internet-rect");
-  const inetIcon1 = document.getElementById("node-internet-icon-1");
-  const inetIcon2 = document.getElementById("node-internet-icon-2");
-  const inetIcon3 = document.getElementById("node-internet-icon-3");
-  const inetLabel = document.getElementById("node-internet-label");
+  const up = VPN.up;
+  const online = navigator.onLine;
+  const on = (id, v) => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle("on", v);
+  };
+  on("tun-vpn", up);
+  on("seg-red", up);
+  on("node-ipad", online || up);
+  on("node-shdw", up);
+  on("node-backend", up);
+  on("node-red", up);
+  diagram.dataset.live = up ? "true" : "false";
 
-  // Visual order: iPad -> Inner VPN -> Outer VPN (Privoro SHDW) -> Internet
-  // Link 1 (Device -> Inner): active when inner tunnel is up
-  link1.classList.toggle("active", innerActive);
-  innerRect.classList.toggle("tunnel-active", innerActive);
-  innerIcon.classList.toggle("tunnel-active", innerActive);
-  innerLabel.classList.toggle("active", innerActive);
-  lock1.classList.toggle("active", innerActive);
+  /* status chips: all green whenever connected */
+  const chip = (id, v) => document.getElementById(id).classList.toggle("ok", v);
+  chip("chip-internet", online);
+  chip("chip-vpn", up);
 
-  // Link 2 (Inner -> Outer/SHDW): active when outer wraps the inner tunnel
-  const fullPath = innerActive && outerActive;
-  link2.classList.toggle("active", fullPath);
-  outerRect.classList.toggle("tunnel-active", fullPath);
-  outerIcon.classList.toggle("tunnel-active", fullPath);
-  outerLabel.classList.toggle("active", fullPath);
-  lock2.classList.toggle("active", fullPath);
+  /* VPN panel state row */
+  document.getElementById("vpn-state").classList.toggle("err", !up);
 
-  // Link 3 (Outer -> Internet) and the Internet endpoint glow on full path
-  link3.classList.toggle("active", fullPath);
-  inetRect.classList.toggle("tunnel-active", fullPath);
-  inetRect.classList.toggle("muted", !fullPath);
-  inetIcon1.classList.toggle("tunnel-active", fullPath);
-  inetIcon2.classList.toggle("tunnel-active", fullPath);
-  inetIcon3.classList.toggle("tunnel-active", fullPath);
-  inetLabel.classList.toggle("active", fullPath);
+  /* topbar badge */
+  const badge = document.getElementById("top-badge");
+  badge.classList.toggle("down", !up);
+  document.getElementById("top-badge-text").textContent = up ? "Secure" : "Down";
 }
 
 function setHero(state, label, sub) {
-  heroEl.dataset.state = state;
   stateText.textContent = label;
   stateSub.textContent = sub;
-  if (state === "online") {
-    TUNNEL.outer = true;
-    TUNNEL.inner = true;
-    document.getElementById("tA-state").classList.remove("err");
-    document.getElementById("tA-state").classList.add("ok");
-    document.getElementById("tB-state").classList.remove("err");
-    document.getElementById("tB-state").classList.add("ok");
-  } else if (state === "offline") {
-    TUNNEL.outer = false;
-    TUNNEL.inner = false;
-  } else if (state === "degraded") {
-    // Treat as outer up, inner unverified (still draw both since we cannot
-    // independently probe; real product would have liveness checks here).
-    TUNNEL.outer = true;
-    TUNNEL.inner = true;
-  }
+  const ok = (state === "online" || state === "degraded");
+  stateText.classList.toggle("ok", ok);
+  stateText.classList.toggle("down", state === "offline");
+  stateText.classList.toggle("warn", state === "degraded");
+  stateDot.classList.toggle("ok", ok);
+  VPN.up = ok;
   paintTunnel();
 }
 paintTunnel();
@@ -1638,12 +851,18 @@ if (navigator.connection) navigator.connection.addEventListener("change", refres
    ONLINE/OFFLINE
 =========================================================== */
 function setOnline(on) {
-  document.getElementById("net-online").textContent = on ? "yes" : "no";
-  document.getElementById("net-status").textContent = on ? "online" : "offline";
+  const vOnline = document.getElementById("net-online");
+  const vStatus = document.getElementById("net-status");
+  vOnline.textContent = on ? "yes" : "no";
+  vStatus.textContent = on ? "online" : "offline";
+  vOnline.classList.toggle("ok", on);
+  vOnline.classList.toggle("bad", !on);
+  vStatus.classList.toggle("ok", on);
+  vStatus.classList.toggle("bad", !on);
   if (!on) {
-    setHero("offline", "Not Connected", "device has no internet connectivity");
+    setHero("offline", "Not Connected", "Device has no internet connectivity. VPN is down.");
   } else {
-    setHero("online", "Connected", "internet reachable / both tunnels established");
+    setHero("online", "Connected", "Internet reachable. VPN established.");
     refreshIP();
   }
 }
@@ -1665,19 +884,16 @@ async function fetchJsonWithTimeout(url, ms = 6000) {
 }
 
 async function lookupIP() {
-  // Try ipapi.co first (full record)
   try {
     const j = await fetchJsonWithTimeout("https://ipapi.co/json/");
     if (j && j.ip) return normalizeIpapi(j);
   } catch (e) { console.warn("ipapi.co failed", e); }
 
-  // Fallback 1: ipwho.is (free, permissive CORS)
   try {
     const j = await fetchJsonWithTimeout("https://ipwho.is/");
     if (j && j.ip) return normalizeIpwhois(j);
   } catch (e) { console.warn("ipwho.is failed", e); }
 
-  // Fallback 2: ipify for IP only, then ipapi.co/{ip}/json/
   try {
     const idJ = await fetchJsonWithTimeout("https://api.ipify.org?format=json");
     if (idJ && idJ.ip) {
@@ -1728,7 +944,7 @@ async function refreshIP() {
   if (!navigator.onLine) return;
   const j = await lookupIP();
   if (!j) {
-    setHero("degraded", "Connected", "ip geolocation unavailable");
+    setHero("degraded", "Connected", "IP geolocation unavailable.");
     document.getElementById("net-ip").textContent = "lookup unavailable";
     return;
   }
@@ -1745,13 +961,13 @@ async function refreshIP() {
     plotEgress(j.lat, j.lng, j.ip, j.city, j.country);
   }
   const subParts = [];
-  if (j.city || j.country) subParts.push("egress: " + [j.city, j.country].filter(Boolean).join(", "));
+  if (j.city || j.country) subParts.push("Egress: " + [j.city, j.country].filter(Boolean).join(", "));
   if (j.org) subParts.push(j.org);
-  setHero("online", "Connected", subParts.join(" / ") || "internet reachable");
+  setHero("online", "Connected", (subParts.join(" / ") || "Internet reachable") + ".");
 }
 
 /* ===========================================================
-   RTT GRAPH
+   RTT SPARKLINE
 =========================================================== */
 const rttCanvas = document.getElementById("rtt-canvas");
 const rttHistory = [];
@@ -1790,7 +1006,6 @@ function drawRtt() {
     y: h - (v / max) * (h - 4) - 2,
   }));
 
-  // smooth path helper
   const trace = () => {
     ctx.moveTo(pts[0].x, pts[0].y);
     for (let i = 0; i < pts.length - 1; i++) {
@@ -1808,12 +1023,12 @@ function drawRtt() {
   ctx.lineTo(pts[pts.length - 1].x, h);
   ctx.lineTo(0, h);
   ctx.closePath();
-  ctx.fillStyle = "rgba(0,179,209,0.18)";
+  ctx.fillStyle = "rgba(235,106,31,0.14)";
   ctx.fill();
 
   ctx.beginPath();
   trace();
-  ctx.strokeStyle = "#00b3d1";
+  ctx.strokeStyle = "#EB6A1F";
   ctx.lineWidth = 1.6;
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
@@ -1836,31 +1051,24 @@ setInterval(probeRtt, CONFIG.rttIntervalMs);
 setTimeout(probeRtt, 500);
 
 /* ===========================================================
-   STAGE TABS
+   DIAGNOSTIC TABS
 =========================================================== */
-const STAGE_LABELS = {
-  speed: "Speed Test",
-  video: "HD Video Stream",
-  dl: "Bulk File Transfer",
-};
 function activateTab(name) {
-  document.querySelectorAll(".action-btn").forEach(b => {
+  document.querySelectorAll(".tab").forEach(b => {
     b.dataset.active = (b.dataset.tab === name) ? "true" : "false";
   });
   document.querySelectorAll(".pane").forEach(p => {
     p.dataset.active = (p.dataset.pane === name) ? "true" : "false";
   });
-  document.getElementById("stage-title").textContent = STAGE_LABELS[name] || "Demo";
-  document.getElementById("stage-id").textContent = "DEMO." + name.toUpperCase();
   setTimeout(fitAllCanvases, 50);
 }
-document.querySelectorAll(".action-btn").forEach(b => {
+document.querySelectorAll(".tab").forEach(b => {
   b.addEventListener("click", () => activateTab(b.dataset.tab));
 });
 activateTab("speed");
 
 /* ===========================================================
-   LIVE LINE CHART
+   LIVE LINE CHART (light theme)
 =========================================================== */
 function drawLineChart(canvas, series, opts = {}) {
   const ctx = canvas.getContext("2d");
@@ -1868,7 +1076,7 @@ function drawLineChart(canvas, series, opts = {}) {
   if (!w || !h) return;
   ctx.clearRect(0,0,w,h);
 
-  ctx.strokeStyle = "rgba(255,255,255,0.04)";
+  ctx.strokeStyle = "rgba(0,0,0,0.05)";
   ctx.lineWidth = 1;
   for (let i = 1; i < 5; i++) {
     const y = (h / 5) * i;
@@ -1879,22 +1087,20 @@ function drawLineChart(canvas, series, opts = {}) {
   series.forEach(s => s.data.forEach(p => { if (p > max) max = p; }));
   max = max * 1.15;
 
-  ctx.fillStyle = "rgba(255,255,255,0.22)";
-  ctx.font = "10px 'Inter', sans-serif";
+  ctx.fillStyle = "rgba(0,0,0,0.32)";
+  ctx.font = "10px 'JetBrains Mono', monospace";
   ctx.textAlign = "right";
   for (let i = 0; i <= 4; i++) {
     const v = max * (1 - i / 4);
     const y = (h / 4) * i;
-    ctx.fillText(v.toFixed(0), w - 4, Math.min(h - 2, y + 9));
+    ctx.fillText(v.toFixed(0), w - 6, Math.min(h - 4, y + 11));
   }
   if (opts.unit) {
     ctx.textAlign = "left";
-    ctx.fillStyle = "rgba(255,255,255,0.28)";
-    ctx.fillText(opts.unit, 4, 12);
+    ctx.fillStyle = "rgba(0,0,0,0.38)";
+    ctx.fillText(opts.unit, 6, 12);
   }
 
-  // Helper: draws a smooth curve through a list of points using
-  // Catmull-Rom-style midpoint smoothing (works well with 1+ points).
   function tracePath(pts, ctx) {
     if (pts.length === 0) return;
     if (pts.length === 1) {
@@ -1907,7 +1113,6 @@ function drawLineChart(canvas, series, opts = {}) {
       const yc = (pts[i].y + pts[i + 1].y) / 2;
       ctx.quadraticCurveTo(pts[i].x, pts[i].y, xc, yc);
     }
-    // last segment
     const last = pts[pts.length - 1];
     const prev = pts[pts.length - 2];
     ctx.quadraticCurveTo(prev.x, prev.y, last.x, last.y);
@@ -1938,7 +1143,6 @@ function drawLineChart(canvas, series, opts = {}) {
     ctx.lineJoin = "round";
     ctx.stroke();
 
-    // last point dot
     if (pts.length) {
       const last = pts[pts.length - 1];
       ctx.beginPath();
@@ -1975,8 +1179,8 @@ const speedChart = document.getElementById("speed-chart");
 let speedSeries = { dl: [], ul: [] };
 function drawSpeedChart() {
   drawLineChart(speedChart, [
-    { data: rollingAverage(speedSeries.dl, 5), stroke: "#00b3d1", fill: "rgba(0,179,209,0.14)", width: 2.0 },
-    { data: rollingAverage(speedSeries.ul, 5), stroke: "#b0b4b8", fill: "rgba(176,180,184,0.08)", width: 1.6 },
+    { data: rollingAverage(speedSeries.dl, 5), stroke: "#EB6A1F", fill: "rgba(235,106,31,0.12)", width: 2.0 },
+    { data: rollingAverage(speedSeries.ul, 5), stroke: "#4178B5", fill: "rgba(65,120,181,0.08)", width: 1.6 },
   ], { unit: "Mbps", minMax: 50 });
 }
 
@@ -2107,7 +1311,6 @@ sp.run.addEventListener("click", async () => {
   } catch(e) {
     sp.status.classList.add("err");
     if (e.name === "AbortError") sp.status.textContent = "cancelled";
-    else if (location.protocol === "file:") sp.status.textContent = "blocked: host the file";
     else sp.status.textContent = "error: " + (e.message || "test failed");
   } finally {
     sp.run.disabled = false;
@@ -2137,7 +1340,6 @@ let ytStatsInt = null;
 let ytAPILoading = null;
 let ytLastBytes = 0;
 let ytLastBytesTime = 0;
-let ytQualityForced = false;
 
 function loadYTAPI() {
   if (window.YT && window.YT.Player) return Promise.resolve();
@@ -2180,7 +1382,7 @@ function showVideoError(msg) {
   if (ph) {
     ph.style.display = "flex";
     ph.textContent = msg;
-    ph.style.color = "var(--err)";
+    ph.style.color = "var(--red)";
   }
   document.getElementById("vid-state").textContent = "error";
 }
@@ -2189,7 +1391,7 @@ async function initYTPlayer() {
   const ph = document.getElementById("video-placeholder");
   if (ph) {
     ph.style.display = "flex";
-    ph.style.color = "var(--fg-2)";
+    ph.style.color = "var(--ink-4)";
     ph.textContent = "loading player...";
   }
 
@@ -2205,7 +1407,6 @@ async function initYTPlayer() {
   ytStartTime = null;
   ytLastBytes = 0;
   ytLastBytesTime = 0;
-  ytQualityForced = false;
   document.getElementById("vid-stalls").textContent = "0";
   document.getElementById("vid-time").textContent = "0s";
   document.getElementById("vid-buf").textContent = "0%";
@@ -2229,7 +1430,7 @@ async function initYTPlayer() {
         modestbranding: 1,
         rel: 0,
         playsinline: 1,
-        vq: "hd720",     // hint to start at 720p
+        vq: "hd720",
         hd: 1,
       },
       events: {
@@ -2243,8 +1444,6 @@ async function initYTPlayer() {
           document.getElementById("vid-state").textContent = "ready";
           if (ytStatsInt) clearInterval(ytStatsInt);
           ytStatsInt = setInterval(updateYTStats, 1000);
-          // Re-apply 720p on a short interval for the first 8 seconds since
-          // YouTube may downgrade for ABR.
           let attempts = 0;
           const forceInt = setInterval(() => {
             force720p();
@@ -2255,7 +1454,7 @@ async function initYTPlayer() {
         onStateChange: (ev) => {
           const states = {"-1":"unstarted",0:"ended",1:"playing",2:"paused",3:"buffering",5:"cued"};
           document.getElementById("vid-state").textContent = states[ev.data] || "unknown";
-          if (ev.data === 1) force720p(); // re-assert on play
+          if (ev.data === 1) force720p();
           if (ev.data === 3) {
             ytStallCount++;
             document.getElementById("vid-stalls").textContent = ytStallCount;
@@ -2263,7 +1462,6 @@ async function initYTPlayer() {
         },
         onPlaybackQualityChange: (ev) => {
           document.getElementById("vid-q").textContent = ev.data;
-          // If YouTube downgraded us, push back up to 720
           if (ev.data !== "hd720" && ev.data !== "hd1080" && ev.data !== "highres") {
             setTimeout(force720p, 200);
           }
@@ -2301,14 +1499,12 @@ function updateYTStats() {
         const mb = (loadedBytes / 1e6).toFixed(1);
         document.getElementById("vid-bytes").textContent = mb + " MB";
 
-        // Compute instantaneous bitrate based on bytes delta over time delta
         const now = Date.now();
         if (ytLastBytesTime && now > ytLastBytesTime) {
           const deltaBytes = loadedBytes - ytLastBytes;
           const deltaSec = (now - ytLastBytesTime) / 1000;
           if (deltaSec > 0 && deltaBytes >= 0) {
             const mbps = (deltaBytes * 8 / 1e6) / deltaSec;
-            // Only update display when there is meaningful download activity
             if (mbps >= 0) {
               document.getElementById("vid-rate").textContent = mbps.toFixed(2) + " Mbps";
             }
@@ -2356,7 +1552,7 @@ const dlChart = document.getElementById("dl-chart");
 let dlSeries = [];
 function drawDlChart() {
   drawLineChart(dlChart, [
-    { data: rollingAverage(dlSeries, 5), stroke: "#00b3d1", fill: "rgba(0,179,209,0.14)", width: 2.0 },
+    { data: rollingAverage(dlSeries, 5), stroke: "#EB6A1F", fill: "rgba(235,106,31,0.12)", width: 2.0 },
   ], { unit: "MB/s", minMax: 5 });
 }
 
@@ -2431,7 +1627,6 @@ dl.run.addEventListener("click", async () => {
   } catch(e) {
     dl.status.classList.add("err");
     if (e.name === "AbortError") dl.status.textContent = "cancelled";
-    else if (location.protocol === "file:") dl.status.textContent = "blocked: host the file";
     else dl.status.textContent = "error: " + (e.message || "failed");
   } finally {
     dl.run.disabled = false;
@@ -2440,7 +1635,82 @@ dl.run.addEventListener("click", async () => {
 dl.cancel.addEventListener("click", () => { if (dlAbort) dlAbort.abort(); });
 
 /* ===========================================================
-   MAP
+   TRACEROUTE
+   Browsers cannot perform real traceroute (no raw socket access),
+   so this delegates to HackerTarget's free MTR API which runs the
+   trace server-side and returns text output.
+=========================================================== */
+const tr = {
+  target: document.getElementById("tr-target"),
+  output: document.getElementById("tr-output"),
+  run: document.getElementById("tr-run"),
+  clear: document.getElementById("tr-clear"),
+};
+let traceAbort = null;
+
+function traceSetText(text) {
+  tr.output.textContent = text;
+}
+function traceSetHtml(html) {
+  tr.output.innerHTML = html;
+}
+
+tr.run.addEventListener("click", async () => {
+  const target = tr.target.value.trim();
+  if (!target) {
+    traceSetHtml('<span class="trace-line-error">enter a hostname or IP first.</span>');
+    return;
+  }
+  if (!/^[a-zA-Z0-9][a-zA-Z0-9.\-:]*[a-zA-Z0-9]$/.test(target) || target.length > 253) {
+    traceSetHtml('<span class="trace-line-error">invalid target. use a hostname or IP address.</span>');
+    return;
+  }
+
+  tr.run.disabled = true;
+  tr.target.disabled = true;
+  traceAbort = new AbortController();
+  traceSetHtml('<span class="trace-line-running">tracing route to ' + target +
+               ' <span class="blink">_</span><br><br>this can take 20 to 60 seconds.<br>the trace runs from the api.hackertarget.com server, not from this device.</span>');
+
+  try {
+    const url = "https://api.hackertarget.com/mtr/?q=" + encodeURIComponent(target);
+    const res = await fetch(url, { cache: "no-store", signal: traceAbort.signal });
+    if (!res.ok) throw new Error("status " + res.status);
+    const text = await res.text();
+
+    if (!text || text.length < 60) {
+      traceSetHtml('<span class="trace-line-error">' + (text || "empty response") + '</span>');
+    } else if (/api count exceeded|rate limit|please try again later/i.test(text)) {
+      traceSetHtml('<span class="trace-line-error">' + text.trim() + '<br><br>HackerTarget free tier allows ~50 requests per day per IP. wait a bit and try again, or pick a different target.</span>');
+    } else if (/error|invalid host/i.test(text) && text.length < 200) {
+      traceSetHtml('<span class="trace-line-error">' + text.trim() + '</span>');
+    } else {
+      traceSetText(text);
+    }
+  } catch(e) {
+    if (e.name === "AbortError") {
+      traceSetHtml('<span class="trace-line-error">cancelled.</span>');
+    } else {
+      traceSetHtml('<span class="trace-line-error">trace failed: ' + (e.message || "network error") + '</span>');
+    }
+  } finally {
+    tr.run.disabled = false;
+    tr.target.disabled = false;
+    traceAbort = null;
+  }
+});
+
+tr.clear.addEventListener("click", () => {
+  if (traceAbort) traceAbort.abort();
+  traceSetHtml('<span class="trace-hint">Click Run Trace to map the network path to a target host. Note: this trace originates from the HackerTarget API server, not from the iPad through the VPN. It is useful for showing reachability and route stability.</span>');
+});
+
+tr.target.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !tr.run.disabled) tr.run.click();
+});
+
+/* ===========================================================
+   MAP (light tiles to match the editorial theme)
 =========================================================== */
 const map = L.map("map", {
   zoomControl: true,
@@ -2448,9 +1718,10 @@ const map = L.map("map", {
   worldCopyJump: true,
 }).setView([CONFIG.device.lat, CONFIG.device.lng], 4);
 
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  maxZoom: 18,
-  attribution: '© OpenStreetMap contributors'
+L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+  maxZoom: 19,
+  subdomains: "abcd",
+  attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
 }).addTo(map);
 
 function makeMarker(lat, lng, cls, tip) {
@@ -2482,7 +1753,7 @@ function plotEgress(lat, lng, ip, city, country) {
     [CONFIG.device.lat, CONFIG.device.lng],
     [lat, lng]
   ], {
-    color: "#00b3d1",
+    color: "#EB6A1F",
     weight: 1.5,
     opacity: 0.7,
     dashArray: "4 6"
@@ -2516,7 +1787,7 @@ document.getElementById("settings-save").addEventListener("click", () => {
   if (ytInput) {
     const id = parseYouTubeId(ytInput);
     if (!id) {
-      setYt.style.borderColor = "var(--err)";
+      setYt.style.borderColor = "var(--red)";
       setYt.focus();
       return;
     }
